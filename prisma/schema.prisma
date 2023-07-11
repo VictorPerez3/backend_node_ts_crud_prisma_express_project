@@ -1,0 +1,32 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// Sempre que você atualizar seu esquema Prisma, você terá que atualizar seu esquema de banco de dados usando um ou . Isso manterá o esquema do banco de dados sincronizado com o esquema do Prisma. Os comandos também regenerarão o Prisma Client: 
+//Comando para atualizar o esquema do D.B: prisma migrate devprisma db push
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model InfoUser {
+  id     Int     @id @default(autoincrement())
+  cpf   String   @db.VarChar(255)
+  bankName   String   @db.VarChar(255)
+  bankNumber   String   @db.VarChar(255)
+  agency   String   @db.VarChar(255)
+  accountNumber   String   @db.VarChar(255)
+  userId Int     @unique
+  User   Users    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model Users {
+  id      Int      @id @default(autoincrement())
+  name    String?  @db.VarChar(255)
+  email   String   @unique @db.VarChar(255)
+  password   String   @db.VarChar(255)
+  Profile InfoUser?
+}
