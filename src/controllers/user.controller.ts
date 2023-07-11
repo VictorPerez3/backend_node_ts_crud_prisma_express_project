@@ -1,5 +1,4 @@
-import { any, number } from "zod";
-import Service from "../services/service";
+import Service from "../services/user.service";
 import { Request, Response, NextFunction } from "express";
 
 //lida com as requisições HTTP e chama os métodos correspondentes

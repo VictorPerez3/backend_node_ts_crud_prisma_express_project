@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response, Router } from "express";
 import dotenv from "dotenv";
-import Controller from "./controllers/controller";
+import Controller from "./controllers/user.controller";
 
 const app = express();
 const router = Router();
