@@ -1,23 +1,29 @@
-import { Router } from 'express';
-import Controller from '../controllers/user.controller';
+import UserController from "../controllers/user.controller";
+import { verifyToken } from "../middleware/auth";
+import { createUserSchema } from "../schemas/user.schemas";
+import { validate } from "../middleware/validate";
 
-//Importa o controller 
+//Importa o controller
 
-const router = Router();
+const userRoutes = (app: any) => {
+  
+  //teste se o servidor esta online
+  app.get("/users/ping", UserController.ping);
 
-//get all
-router.get("/", Controller.getAll.bind);
+  //retorna todos os usuarios (necessario token)
+  app.get("/users", verifyToken, UserController.getAll);
 
-// get id
-router.get("/:id", Controller.getById.bind);
+  //retorna usuario pelo ID (necessario token)
+  app.get("/users/:id", verifyToken, UserController.getById);
 
-//post
-router.post("/", Controller.create.bind);
+  //criação de usuarios user/admin (validação de cadastro)
+  app.post("/users/register", validate(createUserSchema), UserController.create);
 
-//update 
-router.put("/:id", Controller.update.bind);
+  //atualiza dados do usuario ja criado(necessario token)
+  app.put("/users/:id", verifyToken, UserController.update);
 
-//delete 
-router.delete("/:id", Controller.destroy.bind);
+  //deleta usuario(necessario token)
+  app.delete("/users/:id", verifyToken, UserController.destroy);
+};
 
-export default router;
+export default userRoutes;

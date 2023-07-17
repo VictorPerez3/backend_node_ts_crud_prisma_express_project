@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-class Service {
+export default class UserService {
   static async getAll() {
     return await prisma.users.findMany();
   }
@@ -35,4 +35,3 @@ class Service {
     });
   }
 }
-export default Service;

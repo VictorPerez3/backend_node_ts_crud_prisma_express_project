@@ -1,35 +1,19 @@
 import express, { NextFunction, Request, Response, Router } from "express";
 import dotenv from "dotenv";
-import Controller from "./controllers/user.controller";
-
-const app = express();
-const router = Router();
+import routes from "./routes";
 
 dotenv.config();
-const port = process.env.SERVER_PORT; // default port to listen
+
+const app = express();
 
 //middleware - Parsing do Body da requisição(possibilita conseguir ler o json)
-router.use(express.json());
+app.use(express.json());
 
-//get all
-router.get("/", Controller.getAll.bind(Controller));
-
-//get id
-router.get("/:id", Controller.getById.bind(Controller));
-
-//post
-router.post("/", Controller.create.bind(Controller));
-
-//update 
-router.put("/:id", Controller.update.bind(Controller));
-
-//delete 
-router.delete("/:id", Controller.destroy.bind(Controller));
-
-//Registrando a rota na aplicação
-app.use("/users", router);
+//Import de routers
+routes(app);
 
 // start the Express server
+const port = process.env.SERVER_PORT; // default port to listen
 app.listen(port, () => {
   console.log(`server started at http://localhost:${port}`);
 });
