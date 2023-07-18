@@ -11,10 +11,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validate = void 0;
 const zod_1 = require("zod");
-//middleware para a validação de dados recebidos em uma 
+//middleware para a validação de dados recebidos em uma
 //requisição HTTP usando a biblioteca Zod.
 const validate = 
-//tentativa de validação dos dados recebidos na requisição, 
+//tentativa de validação dos dados recebidos na requisição,
 //utilizando o esquema de validação definido em user.schemas
 (schema) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -28,7 +28,7 @@ const validate =
     catch (error) {
         if (error instanceof zod_1.ZodError) {
             return res.status(400).json({
-                status: 'Bad Request!',
+                status: "Bad Request!",
                 errors: error.errors,
             });
         }

@@ -16,6 +16,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const client_1 = require("@prisma/client");
+const auth_services_1 = __importDefault(require("../services/auth.services"));
 const prisma = new client_1.PrismaClient();
 class AuthController {
 }
@@ -30,12 +31,8 @@ AuthController.authenticate = (req, res) => __awaiter(void 0, void 0, void 0, fu
                 .status(400)
                 .send({ message: "Email and password are required" });
         }
-        //Busca o usuario com o email fornecido
-        const userAuth = yield prisma.users.findFirst({
-            where: {
-                email,
-            },
-        });
+        //Service: Busca o usuario com o email fornecido
+        const userAuth = yield auth_services_1.default.authenticate(email);
         //Verifica se o usuario existe no banco de dados
         if (!userAuth) {
             return res

@@ -13,7 +13,7 @@ const client_1 = require("@prisma/client");
 //responsável por realizar as operações relacionadas ao banco de dados
 //usando o Prisma
 const prisma = new client_1.PrismaClient();
-class Service {
+class UserService {
     static getAll() {
         return __awaiter(this, void 0, void 0, function* () {
             return yield prisma.users.findMany();
@@ -49,5 +49,5 @@ class Service {
         });
     }
 }
-exports.default = Service;
+exports.default = UserService;
 //# sourceMappingURL=user.service.js.map

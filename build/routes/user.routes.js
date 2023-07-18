@@ -4,33 +4,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const user_controller_1 = __importDefault(require("../controllers/user.controller"));
+const auth_1 = require("../middleware/auth");
+const user_schemas_1 = require("../schemas/user.schemas");
+const validate_1 = require("../middleware/validate");
 //Importa o controller
 const userRoutes = (app) => {
-    //   // ping
-    //   app.get("/ping", UserController.ping.bind);
-    //   //post
-    //   app.post("/register", validate(createUserSchema), UserController.create.bind);
-    //   //get all
-    //   app.get("/", verifyToken, UserController.getAll.bind);
-    //   //get id
-    //   app.get("/:id", verifyToken, UserController.getById.bind);
-    //   //update
-    //   app.put("/:id", verifyToken, UserController.update.bind);
-    //   //delete
-    //   app.delete("/:id", verifyToken, UserController.destroy.bind);
-    ///////////////////////////////////////////////////////
-    // ping
-    app.get("/ping", user_controller_1.default.ping.bind(user_controller_1.default));
-    //get all
-    app.get("/", user_controller_1.default.getAll.bind(user_controller_1.default));
-    //get id
-    app.get("/:id", user_controller_1.default.getById.bind(user_controller_1.default));
-    //post
-    app.post("/register", user_controller_1.default.create.bind(user_controller_1.default));
-    //update 
-    app.put("/:id", user_controller_1.default.update.bind(user_controller_1.default));
-    //delete 
-    app.delete("/:id", user_controller_1.default.destroy.bind(user_controller_1.default));
+    //teste se o servidor esta online
+    app.get("/users/ping", user_controller_1.default.ping);
+    //retorna todos os usuarios (necessario token)
+    app.get("/users", auth_1.verifyToken, user_controller_1.default.getAll);
+    //retorna usuario pelo ID (necessario token)
+    app.get("/users/:id", auth_1.verifyToken, user_controller_1.default.getById);
+    //criação de usuarios user/admin (validação de cadastro)
+    app.post("/users/register", (0, validate_1.validate)(user_schemas_1.createUserSchema), user_controller_1.default.create);
+    //atualiza dados do usuario ja criado(necessario token)
+    app.put("/users/:id", auth_1.verifyToken, user_controller_1.default.update);
+    //deleta usuario(necessario token)
+    app.delete("/users/:id", auth_1.verifyToken, user_controller_1.default.destroy);
 };
 exports.default = userRoutes;
 //# sourceMappingURL=user.routes.js.map

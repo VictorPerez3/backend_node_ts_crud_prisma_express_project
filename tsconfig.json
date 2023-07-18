@@ -1,13 +1,3 @@
-// {
-//     "compilerOptions": {
-//         "outDir": "./out",
-//         "rootDir": "./src",
-//         "sourceMap": true,
-//         "moduleResolution": "node",
-//         "target": "ES2016"
-//     }
-// }
-
 {
     "compilerOptions": {
       /* Visit https://aka.ms/tsconfig to read more about this file */

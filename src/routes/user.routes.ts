@@ -7,7 +7,7 @@ import { validate } from "../middleware/validate";
 
 const userRoutes = (app: any) => {
   
-  //teste se o servidor esta online
+  //Verifica se o servidor esta online 
   app.get("/users/ping", UserController.ping);
 
   //retorna todos os usuarios (necessario token)

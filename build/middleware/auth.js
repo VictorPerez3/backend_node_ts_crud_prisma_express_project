@@ -9,14 +9,11 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const verifyToken = (req, res, next) => {
     //obtém o token de autenticação presente no cabeçalho da requisição
     const token = req.headers.authorization;
-    console.log(token);
     if (!token) {
         return res.status(401).send({ message: "Required Token" });
     }
     try {
         const replace = token.replace("Bearer ", "");
-        console.log(replace);
-        console.log(String(process.env.TOKEN_KEY));
         //verificação do token usando jwt
         jsonwebtoken_1.default.verify(replace, String(process.env.TOKEN_KEY));
         next();
