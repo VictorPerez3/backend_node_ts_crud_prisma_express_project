@@ -1,6 +1,6 @@
-import { Router } from 'express';
-import Controller from '../controllers/user.controller';
-//Importa o controller 
+import { Router } from "express";
+import Controller from "../controllers/user.controller";
+//Importa o controller
 const router = Router();
 //get all
 router.get("/", Controller.getAll.bind);
@@ -8,9 +8,9 @@ router.get("/", Controller.getAll.bind);
 router.get("/:id", Controller.getById.bind);
 //post
 router.post("/", Controller.create.bind);
-//update 
+//update
 router.put("/:id", Controller.update.bind);
-//delete 
+//delete
 router.delete("/:id", Controller.destroy.bind);
 export default router;
 //# sourceMappingURL=user.routes.js.map

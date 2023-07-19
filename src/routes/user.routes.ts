@@ -1,14 +1,13 @@
 import UserController from "../controllers/user.controller";
-import { verifyToken } from "../middleware/auth";
+import { verifyToken } from "../middlewares/auth";
 import { createUserSchema } from "../schemas/user.schemas";
-import { validate } from "../middleware/validate";
-
-//Importa o controller
+import { validate } from "../middlewares/validate";
 
 const userRoutes = (app: any) => {
-  
-  //Verifica se o servidor esta online 
-  app.get("/users/ping", UserController.ping);
+  //Verifica se o servidor esta online
+  app.get("/users/ping", UserController.verifyServer);
+
+  //User: Verifica quem esta logado (name)
 
   //retorna todos os usuarios (necessario token)
   app.get("/users", verifyToken, UserController.getAll);
@@ -17,7 +16,11 @@ const userRoutes = (app: any) => {
   app.get("/users/:id", verifyToken, UserController.getById);
 
   //criação de usuarios user/admin (validação de cadastro)
-  app.post("/users/register", validate(createUserSchema), UserController.create);
+  app.post(
+    "/users/register",
+    validate(createUserSchema),
+    UserController.create,
+  );
 
   //atualiza dados do usuario ja criado(necessario token)
   app.put("/users/:id", verifyToken, UserController.update);

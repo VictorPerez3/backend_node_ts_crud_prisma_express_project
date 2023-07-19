@@ -14,14 +14,14 @@ router.get("/", Controller.getAll.bind(Controller));
 router.get("/:id", Controller.getById.bind(Controller));
 //post
 router.post("/", Controller.create.bind(Controller));
-//update 
+//update
 router.put("/:id", Controller.update.bind(Controller));
-//delete 
+//delete
 router.delete("/:id", Controller.destroy.bind(Controller));
 //Registrando a rota na aplicação
 app.use("/users", router);
 // start the Express server
 app.listen(port, () => {
-    console.log(`server started at http://localhost:${port}`);
+  console.log(`server started at http://localhost:${port}`);
 });
 //# sourceMappingURL=app.js.map

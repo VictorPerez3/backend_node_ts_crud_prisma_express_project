@@ -4,12 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const user_controller_1 = __importDefault(require("../controllers/user.controller"));
-const auth_1 = require("../middleware/auth");
+const auth_1 = require("../middlewares/auth");
 const user_schemas_1 = require("../schemas/user.schemas");
-const validate_1 = require("../middleware/validate");
+const validate_1 = require("../middlewares/validate");
 //Importa o controller
 const userRoutes = (app) => {
-    //teste se o servidor esta online
+    //Verifica se o servidor esta online 
     app.get("/users/ping", user_controller_1.default.ping);
     //retorna todos os usuarios (necessario token)
     app.get("/users", auth_1.verifyToken, user_controller_1.default.getAll);

@@ -8,6 +8,7 @@ export const validate =
   //tentativa de validação dos dados recebidos na requisição,
   //utilizando o esquema de validação definido em user.schemas
 
+
     (schema: AnyZodObject) =>
     async (req: Request, res: Response, next: NextFunction) => {
       try {

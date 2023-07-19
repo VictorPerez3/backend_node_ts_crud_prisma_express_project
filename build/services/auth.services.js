@@ -8,19 +8,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("@prisma/client");
-//responsável por realizar as operações de autenticação
-//relacionadas ao banco de dados usando o Prisma.
+const auth_repository_1 = __importDefault(require("../repositories/auth.repository"));
+//Service: responsável pelas regras de negocio do controller, abrigando tambem o repositorio.
 const prisma = new client_1.PrismaClient();
-class AuthService {
+class AuthServices {
     static authenticate(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield prisma.users.findFirst({
-                where: { email },
-            });
+            auth_repository_1.default.authenticate(email);
         });
     }
 }
-exports.default = AuthService;
+exports.default = AuthServices;
 //# sourceMappingURL=auth.services.js.map

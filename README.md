@@ -104,6 +104,7 @@ yarn start-dev
 | `yarn start`     | Compilar e rodar servidor - "node build/app.js" |
 | `yarn prestart`  | "npm run build"                                 |
 | `yarn build`     | Gera compilação - "tsc"                         |
+| `yarn format`    | Formatação do codigo - "prettier --write ."     |
 
 # 5) EndPoints Disponíveis
 
@@ -128,3 +129,4 @@ yarn start-dev
 - `ESLint`: Analisa estaticamente o código para encontrar problemas rapidamente.
 - `Nodemon`: Monitora quaisquer alterações na origem e reinicia automaticamente o servidor.
 - `Debug VSCode`: Depurador integrado do VS Code .
+- `Prettier`: Formatação de codigo.

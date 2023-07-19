@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export default class UserService {
+export default class UserRepository {
   static async getAll() {
     return await prisma.users.findMany();
   }

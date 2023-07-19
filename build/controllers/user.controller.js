@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
-const user_service_1 = __importDefault(require("../services/user.service"));
+const user_repository_1 = __importDefault(require("../repositories/user.repository"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 //lida com as requisições HTTP e chama os métodos correspondentes
 //do serviço.
@@ -26,7 +26,7 @@ UserController.ping = (req, res, next) => {
 //////////////////////////////////////
 UserController.getAll = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const users = yield user_service_1.default.getAll();
+        const users = yield user_repository_1.default.getAll();
         console.log(users);
         res.json({
             success: true,
@@ -45,7 +45,7 @@ UserController.getAll = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 UserController.getById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const user = yield user_service_1.default.getById(Number(id));
+        const user = yield user_repository_1.default.getById(Number(id));
         res.json({
             success: true,
             payload: user,
@@ -65,7 +65,7 @@ UserController.create = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         //encripitação da senha
         const hashPassword = yield bcryptjs_1.default.hash(req.body.password, 10);
         req.body.password = hashPassword;
-        const userCreate = yield user_service_1.default.create(req.body);
+        const userCreate = yield user_repository_1.default.create(req.body);
         res.json({
             success: true,
             payload: userCreate,
@@ -82,7 +82,7 @@ UserController.create = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 ////////////////////////////////////////////
 UserController.update = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const usersUpdateById = yield user_service_1.default.update(parseInt(req.params.id), req.body);
+        const usersUpdateById = yield user_repository_1.default.update(parseInt(req.params.id), req.body);
         res.json({
             success: true,
             payload: usersUpdateById,
@@ -99,7 +99,7 @@ UserController.update = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 /////////////////////////////////////////////
 UserController.destroy = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const usersDeleteById = yield user_service_1.default.destroy(parseInt(req.params.id));
+        const usersDeleteById = yield user_repository_1.default.destroy(parseInt(req.params.id));
         res.json({
             success: true,
             payload: usersDeleteById,

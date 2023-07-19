@@ -10,7 +10,8 @@
     "start-dev": "nodemon ./src/app.ts",
     "start": "node build/app.js",
     "prestart": "npm run build",
-    "build": "tsc"
+    "build": "tsc",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@prisma/client": "4.16.2",
@@ -33,6 +34,7 @@
     "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "3.0.0",
     "prisma": "^4.16.2",
     "ts-node": "^10.9.1"
   }

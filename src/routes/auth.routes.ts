@@ -1,9 +1,15 @@
 import AuthController from "../controllers/auth.controller";
 import { loginUserSchema } from "../schemas/user.schemas";
-import { validate } from "../middleware/validate";
+import { validate } from "../middlewares/validate";
 
 const authRoutes = (app: any) => {
-  app.post("/users/login", validate(loginUserSchema), AuthController.authenticate);
+  //Login User
+  app.post("/users/login", validate(loginUserSchema), AuthController.userLogin);
+
+  //Login Admin
+
+  //Logout
+  app.post("/logout", AuthController.logout);
 };
 
 export default authRoutes;
