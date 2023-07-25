@@ -1,6 +1,6 @@
 # Backend_Node_TS_Crud_Prisma_Express_Project
 
-`Data de Desenvolvimento/ultima modificação` : 17/07/2023
+`Data de Desenvolvimento/ultima modificação` : 25/07/2023
 
 `Empresa`: Tegrus
 
@@ -60,21 +60,21 @@ yarn build
 
 ```
 #Server Configuration
-SERVER_PORT=8080
+SERVER_PORT=
 
 #Postgre Auth
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_DB=latihan
-POSTGRES_SCHEMA=public
+POSTGRES_HOST=
+POSTGRES_PORT=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_DB=
+POSTGRES_SCHEMA=
 
 #Token
-TOKEN_KEY="ksjahdkajshdkjashdaskjhdaksjdhkasjdhaskj"
+TOKEN_KEY=
 
 #DataBase Url
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/latihan"
+DATABASE_URL=
 
 ```
 
@@ -108,18 +108,26 @@ yarn start-dev
 
 # 5) EndPoints Disponíveis
 
-| Users                  | Description                                            |
-| ---------------------- | ------------------------------------------------------ |
-| `get /users/ping`      | Verifica se o servidor esta online                     |
-| `get /users`           | Retorna todos os usuarios (necessário token)           |
-| `get /users/:id`       | Retorna usuario pelo ID (necessário token)             |
-| `post /users/register` | Criação de usuários user/admin (validação de cadastro) |
-| `put /users/:id`       | Atualiza dados do usuário já criado(necessário token)  |
-| `delete /users/:id`    | Deleta usuário(necessário token)                       |
+| Users                  | Description                                                |
+| ---------------------- | ---------------------------------------------------------- |
+| `post /users/register` | Criação de usuários (user) (com validação de cadastro)     |
+| `put /users/update`    | (Admin/User) Atualiza dados (nome e senha) da conta logada |
+| `delete /users/delete` | (Admin/user) Deleta usuario logado                         |
 
-| Authentication      | Description                                       |
-| ------------------- | ------------------------------------------------- |
-| `post /users/login` | Valida os dados de login e faz o login do usuário |
+| Authentication      | Description                                   |
+| ------------------- | --------------------------------------------- |
+| `post /users/login` | Login de conta USER                           |
+| `post /admin/login` | Login de conta ADMIN                          |
+| `post /logout`      | Logout                                        |
+| `get /verify`       | Verifica quem esta logado (name, email, role) |
+
+| Admin                          | Description                                              |
+| ------------------------------ | -------------------------------------------------------- |
+| `get /admin`                   | Retorna todos os usuarios                                |
+| `get /admin/:id`               | Retorna usuario pelo ID                                  |
+| `post /admin/register`         | Criação de usuarios (user/admin)                         |
+| `put /admin/updatebyemail`     | Pelo email, atualiza dados de usuarios tipo (user/admin) |
+| `delete /admin/deletebyid/:id` | Deleta por ID, usuarios tipo (user/admin)                |
 
 # 6) Outras Ferramentas / Tecnologias
 

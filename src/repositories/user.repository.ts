@@ -1,37 +1,33 @@
 import { PrismaClient } from "@prisma/client";
 
-//responsável por realizar as operações relacionadas ao banco de dados
-//usando o Prisma
-
 const prisma = new PrismaClient();
 
-export default class UserRepository {
-  static async getAll() {
+  export const getAll = async () => {
     return await prisma.users.findMany();
   }
 
-  static async getById(id: number) {
+  export const getById = async (id: number) => {
     return await prisma.users.findUnique({
       where: { id },
     });
   }
 
-  static async create(reqBody: any) {
+  export const create = async (reqBody: any) => {
     return await prisma.users.create({
       data: { ...reqBody },
     });
   }
 
-  static async update(reqParams: any, reqBody: any) {
+  export const update = async (reqParams: any, reqBody: any) => {
     return await prisma.users.update({
       where: { id: reqParams },
       data: { ...reqBody },
     });
   }
 
-  static async destroy(reqParams: any) {
+  export const destroy = async (reqParams: any) => {
     return await prisma.users.delete({
       where: { id: reqParams },
     });
   }
-}
+

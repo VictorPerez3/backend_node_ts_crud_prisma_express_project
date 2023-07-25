@@ -1,121 +1,116 @@
-import UserRepository from "../repositories/user.repository";
-import { Request, Response, NextFunction, response } from "express";
-import UserServices from "../services/user.services";
+import * as userRepository from "../repositories/user.repository";
+import * as authRepository from "../repositories/auth.repository";
+import { Request, Response } from "express";
+import * as userServices from "../services/user.services";
+import * as authServices from "../services/auth.services";
 
-//lida com as requisições HTTP e chama os métodos correspondentes
-//do serviço.
+//Criação de usuarios user (com validação de cadastro)
+export const createUser = async (req: Request, res: Response) => {
+  try {
+    //encripitação da senha
+    req.body.password = await userServices.passwordEncrypt(req.body.password);
 
-export default class UserController {
-  //Verifica se o servidor esta online
-  static verifyServer = (req: Request, res: Response) => {
-    return res.json("Ok - The server is online");
-  };
+    //Garante que o usuario é user
+    req.body.role = "user";
 
-  //retorna todos os usuarios (necessario token)
-  static getAll = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const users = await UserRepository.getAll();
-      res.json({
-        success: true,
-        payload: users,
-      });
+    //Criado usuario com senha encriptada
+    const userCreate = await userRepository.create(req.body);
 
-      return next();
-    } catch (err) {
-      res.status(500).json({
-        error: "Server error!",
-      });
-      return next(err);
-    }
-  };
+    res.json({
+      success: true,
+      message: "Cadaster type <User> created",
+      payload: userCreate,
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: "Server error!",
+    });
+  }
+};
 
-  //retorna usuario pelo ID (necessario token)
-  static getById = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { id } = req.params;
-      const user = await UserRepository.getById(Number(id));
-      res.json({
-        success: true,
-        payload: user,
-      });
+//Atualiza dados (nome e senha) da conta que esta logada (necessario token)
+export const update = async (req: Request, res: Response) => {
+  try {
+    const { email: emailBody, password: passwordBody } = req.body;
 
-      return next();
-    } catch (err) {
-      res.status(500).json({
-        error: "Server error!",
-      });
-      return next(err);
-    }
-  };
+    if (emailBody) {
+      //Repository: Busca o usuario com o email fornecido
+      const userAuth = await authRepository.findUserAuthRepository(emailBody);
 
-  //criação de usuarios user/admin (validação de cadastro)
-  static create = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      //encripitação da senha
-      req.body.password = await UserServices.passwordEncrypt(req.body.password);
-
-      //Criado usuario com senha encriptada
-      const userCreate = await UserRepository.create(req.body);
-
-      res.json({
-        success: true,
-        message: "Usuário criado",
-        payload: userCreate,
-      });
-
-      return next();
-    } catch (err) {
-      res.status(500).json({
-        error: "Server error!",
-      });
-      return next(err);
-    }
-  };
-
-  //atualiza dados do usuario ja criado(necessario token)
-  static update = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      //caso atualize a senha -> encripitação da senha
-      req.body.password = await UserServices.verifyPasswordEncryptUpdate(
-        req.body.password,
+      //Retorna o usuario pelo Token
+      const userToken = await authServices.decodedToken(
+        req.headers.authorization
       );
 
-      const usersUpdateById = await UserRepository.update(
-        parseInt(req.params.id),
-        req.body,
-      );
-      res.json({
-        success: true,
-        message: "Usuário Atualizado",
-        payload: usersUpdateById,
-      });
+      //Garante que o usuario é user
+      req.body.role = userToken.role;
 
-      return next();
-    } catch (err) {
-      res.status(500).json({
-        error: "Server error!",
+      //Verifica se o email passado é valido e se confere com o login
+      if (!userAuth) {
+        return res.status(401).send({ message: "Incorrect Email" });
+      } else {
+        if (emailBody === userToken.email) {
+          if (passwordBody) {
+            //caso atualize a senha -> encripitação da senha
+            req.body.password = await userServices.verifyPasswordEncryptUpdate(
+              passwordBody
+            );
+            updateSuccessful(req.body, userAuth.id, res);
+          } else {
+            updateSuccessful(req.body, userAuth.id, res);
+          }
+        }
+      }
+    } else {
+      return res.status(401).send({
+        message: "Email not informed ",
       });
-      return next(err);
     }
-  };
+  } catch (err) {
+    res.status(500).json({
+      error: "Server error!",
+    });
+  }
+};
 
-  //deleta usuario(necessario token)
-  static destroy = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const usersDeleteById = await UserRepository.destroy(
-        parseInt(req.params.id),
-      );
-      res.json({
-        success: true,
-        payload: usersDeleteById,
-      });
+//Exclui conta que esta logada (necessario token)
+export const destroy = async (req: Request, res: Response) => {
+  try {
+    //Retorna o usuario pelo Token
+    const userToken = await authServices.decodedToken(
+      req.headers.authorization
+    );
 
-      return next();
-    } catch (err) {
-      res.status(500).json({
-        error: "Server error!",
-      });
-      return next(err);
-    }
-  };
-}
+    //Usuario do login (id do token) terá a conta excluida
+    const usersDeleteById = await userRepository.destroy(
+      parseInt(userToken.id)
+    );
+    res.json({
+      success: true,
+      message: "Deleted logged cadaster",
+      payload: usersDeleteById,
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: "Server error!",
+    });
+  }
+};
+
+export const updateSuccessful = async (
+  reqBody: any,
+  ReqParamsId: any,
+  res: Response
+) => {
+  const usersUpdateById = await userRepository.update(
+    parseInt(ReqParamsId),
+    reqBody
+  );
+  res.json({
+    success: true,
+    message: "Updated logged cadaster",
+    payload: usersUpdateById,
+  });
+};
+
+

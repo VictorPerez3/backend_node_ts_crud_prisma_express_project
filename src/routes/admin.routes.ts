@@ -1,29 +1,31 @@
-import UserController from "../controllers/user.controller";
+import * as adminController from "../controllers/admin.controller";
 import { verifyToken } from "../middlewares/auth";
 import { createUserSchema } from "../schemas/user.schemas";
 import { validate } from "../middlewares/validate";
 
 const adminRoutes = (app: any) => {
-  //Admin: Verifica quem esta logado (name, email, role)
+  //Retorna todos os usuarios com senhas hasheada (necessario token e ser admin)
+  app.get("/admin", verifyToken, adminController.getAll);
 
-  //Admin: retorna todos os usuarios com senhas sem hash (necessario token)
-  app.get("/admin", verifyToken, UserController.getAll);
+  //Retorna usuario pelo ID (necessario token e ser admin)
+  app.get("/admin/:id", verifyToken, adminController.getById);
 
-  //Admin: retorna usuario pelo ID com senha sem hash (necessario token)
-  app.get("/admin/:id", verifyToken, UserController.getById);
-
-  //Admin: criação de usuarios user/admin (validação de cadastro)
+  //Criação de usuarios <user/admin> (com validação de cadastro) - (necessario token e ser admin)
   app.post(
     "/admin/register",
     validate(createUserSchema),
-    UserController.create,
+    adminController.createAdmin
   );
 
-  //atualiza dados do usuario ja criado(necessario token)
-  app.put("/users/:id", verifyToken, UserController.update);
+  //Atualiza dados de usuarios tipo <user/admin> ja criados (necessario token e ser admin)
+  app.put(
+    "/admin/updatebyemail",
+    verifyToken,
+    adminController.updateByEmailUser
+  );
 
-  //deleta usuario(necessario token)
-  app.delete("/users/:id", verifyToken, UserController.destroy);
+  //Deleta usuarios tipo <user/admin> ja criados (necessario token e ser admin)
+  app.delete("/admin/deletebyid/:id", verifyToken, adminController.destroyById);
 };
 
 export default adminRoutes;

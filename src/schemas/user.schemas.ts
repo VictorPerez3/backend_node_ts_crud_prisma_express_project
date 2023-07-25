@@ -1,4 +1,4 @@
-import { object, string, TypeOf, z } from "zod";
+import { z } from "zod";
 
 //user.schemas: esquemas de validação de dados em formato de objetos
 

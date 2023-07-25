@@ -8,11 +8,10 @@ export const validate =
   //tentativa de validação dos dados recebidos na requisição,
   //utilizando o esquema de validação definido em user.schemas
 
-
     (schema: AnyZodObject) =>
     async (req: Request, res: Response, next: NextFunction) => {
       try {
-        await schema.parse({
+        schema.parse({
           params: req.params,
           query: req.query,
           body: req.body,
