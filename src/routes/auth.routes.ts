@@ -8,12 +8,16 @@ const authRoutes = (app: any) => {
   app.post("/users/login", validate(loginUserSchema), authController.userLogin);
 
   //Login Admin
-  app.post("/admin/login", validate(loginUserSchema), authController.adminLogin);
+  app.post(
+    "/admin/login",
+    validate(loginUserSchema),
+    authController.adminLogin,
+  );
 
   //Logout
   app.post("/logout", authController.logout);
 
-  //Verifica quem esta logado (name, email, role) - (necessario token)
+  //Verifica quem esta logado (name, email, role, agencia) - (necessario token)
   app.get("/verify", verifyToken, authController.verifyLoggedUser);
 };
 

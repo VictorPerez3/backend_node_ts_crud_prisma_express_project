@@ -12,29 +12,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model InfoUser {
-  id     Int     @id @default(autoincrement())
-  cpf   String   @db.VarChar(255)
-  bankName   String   @db.VarChar(255)
-  bankNumber   String   @db.VarChar(255)
-  agency   String   @db.VarChar(255)
-  accountNumber   String   @db.VarChar(255)
-  userId Int     @unique
-  User   Users    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model Agency {
+  id        Int      @id @default(autoincrement())
+  name      String?  @db.VarChar(255)
+  image     String?
+  enabled   Boolean  @default(true)
+  users     Users[]
+  clients   Client[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model Users {
-  id      Int      @id @default(autoincrement())
-  name    String?  @db.VarChar(255)
-  email   String   @unique 
-  password String
+  id        Int      @id @default(autoincrement())
+  name      String?  @db.VarChar(255)
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
-  role RoleEnumType? @default(user)
+  role     RoleEnumType? @default(user)
+  agency   Agency        @relation(fields: [agencyId], references: [id])
+  agencyId Int
+}
 
-  Profile InfoUser?
+model Client {
+  id        Int      @id @default(autoincrement())
+  name      String?  @db.VarChar(255)
+  email     String   @unique
+  image     String?
+  enabled   Boolean  @default(true)
+  agencyId  Int
+  agency    Agency   @relation(fields: [agencyId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 enum RoleEnumType {
   user
   admin
+}
+
+model BlackListToken {
+  id        Int     @id @default(autoincrement())
+  token     String  @unique
+  createdAt DateTime @default(now())
 }

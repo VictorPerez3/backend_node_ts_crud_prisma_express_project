@@ -10,7 +10,7 @@ export const getAll = async (req: Request, res: Response) => {
   try {
     //Retorna o usuario pelo Token
     const userToken = await authServices.decodedToken(
-      req.headers.authorization
+      req.headers.authorization,
     );
     if (userToken.role === "admin") {
       const users = await userRepository.getAll();
@@ -36,7 +36,7 @@ export const getById = async (req: Request, res: Response) => {
   try {
     //Retorna o usuario pelo Token
     const userToken = await authServices.decodedToken(
-      req.headers.authorization
+      req.headers.authorization,
     );
     if (userToken.role === "admin") {
       const { id } = req.params;
@@ -63,8 +63,11 @@ export const createAdmin = async (req: Request, res: Response) => {
   try {
     //Retorna o usuario pelo Token
     const userToken = await authServices.decodedToken(
-      req.headers.authorization
+      req.headers.authorization,
     );
+    //Agencia do cliente criado é a mesma do token
+    req.body.agencyId = userToken.agencyId;
+
     if (userToken.role === "admin") {
       //encripitação da senha
       req.body.password = await userServices.passwordEncrypt(req.body.password);
@@ -101,7 +104,7 @@ export const updateByEmailUser = async (req: Request, res: Response) => {
 
       //Retorna o usuario pelo Token
       const userToken = await authServices.decodedToken(
-        req.headers.authorization
+        req.headers.authorization,
       );
 
       //Verifica se o email passado é valido e se confere com o login
@@ -112,7 +115,7 @@ export const updateByEmailUser = async (req: Request, res: Response) => {
           if (passwordBody) {
             //caso atualize a senha -> encripitação da senha
             req.body.password = await userServices.verifyPasswordEncryptUpdate(
-              passwordBody
+              passwordBody,
             );
             userController.updateSuccessful(req.body, userAuth.id, res);
           } else {
@@ -142,11 +145,11 @@ export const destroyById = async (req: Request, res: Response) => {
   try {
     //Retorna o usuario pelo Token
     const userToken = await authServices.decodedToken(
-      req.headers.authorization
+      req.headers.authorization,
     );
     if (userToken.role === "admin") {
       const usersDeleteById = await userRepository.destroy(
-        parseInt(req.params.id)
+        parseInt(req.params.id),
       );
       res.json({
         success: true,

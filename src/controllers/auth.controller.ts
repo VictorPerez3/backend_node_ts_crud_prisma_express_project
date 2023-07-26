@@ -11,7 +11,7 @@ export const userLogin = async (req: Request, res: Response) => {
   const userAuth = await authRepository.findUserAuthRepository(emailBody);
 
   //Login:Verifica se a senha digitada é valida, igual a senha do banco de dados (usuario criado)
-  await checkPasswordEntered(emailBody, passwordBody, userAuth, res);
+  await checkPasswordEntered(passwordBody, userAuth, res);
 };
 
 //Login Admin
@@ -27,11 +27,11 @@ export const adminLogin = async (req: Request, res: Response) => {
   } else {
     if (userAuth?.role! === "admin") {
       //Login:Caso role=admin, realiza login
-      return checkPasswordEntered(emailBody, passwordBody, userAuth, res);
+      return checkPasswordEntered(passwordBody, userAuth, res);
     } else {
-      return res
-        .status(401)
-        .send({ message: "User account does not have Admin permission to login" });
+      return res.status(401).send({
+        message: "User account does not have Admin permission to login",
+      });
     }
   }
 };
@@ -43,47 +43,59 @@ export const logout = async (req: Request, res: Response) => {
       .status(401)
       .send({ message: "Authentication token not provided" });
   } else {
-    // Verifica e invalide o token
-    if (!authServices.validateTokenService(req.headers.authorization)) {
-      return res.status(401).send({ message: "Error verifying token" });
+    //Verifica se o token esta expirado
+    if (authServices.isTokenExpired(req.headers.authorization)) {
+      return res
+        .status(401)
+        .send({ message: "Token expired OR No account logged in" });
     } else {
-      res.status(200).send({ message: "Logout successfully" });
+      // Verifica e valida o token (LOGOUT)
+      if (!authServices.validateTokenService(req.headers.authorization)) {
+        return res.status(401).send({ message: "Error verifying token" });
+      } else {
+        const replace = req.headers.authorization.replace("Bearer ", "");
+        //Movendo o token de Logout para tabela "BlackListToken"
+        await authRepository.moveTokenToBlacklist(replace);
+        res.status(200).send({ message: "Logout successfully" });
+      }
     }
   }
 };
 
-//Verifica quem esta logado (name, email, role) - (necessario token)
-export const verifyLoggedUser = async (req: Request, res: Response) =>{
+//Verifica quem esta logado (name, email, role, agencia) - (necessario token)
+export const verifyLoggedUser = async (req: Request, res: Response) => {
   try {
-const userInfo = await authServices.decodedToken(req.headers.authorization);
-if (userInfo) {
-  return res.json({
-    success: true,
-    payload: userInfo
-  });
-} else {
-  return res.status(401).send({ message: "Incorrect Email" });
-}
+    //Verifica se o token esta expirado
+    if (authServices.isTokenExpired(req.headers.authorization)) {
+      return res
+        .status(401)
+        .send({ message: "Token expired OR No account logged in" });
+    } else {
+      const userInfo = await authServices.decodedToken(
+        req.headers.authorization,
+      );
+      return res.json({
+        success: true,
+        payload: userInfo,
+      });
+    }
   } catch (err) {
     res.status(500).json({
       error: "Server error!",
     });
   }
-}
+};
 
 //Verifica se a senha digitada é valida, igual a senha do banco de dados (usuario criado)
 const checkPasswordEntered = async (
-  emailBody: string,
   passwordBody: string,
   userAuth: any,
-  res: Response
+  res: Response,
 ) => {
   //Verifica se o usuario existe no banco de dados
   try {
     if (!userAuth) {
-      return res
-        .status(401)
-        .send({ message: "Incorrect Email and/or Password" });
+      return res.status(401).send({ message: "Incorrect Email" });
     } else {
       //Verifica se a senha digitada é valida
       if (bcrypt.compareSync(passwordBody, userAuth.password)) {
@@ -94,9 +106,7 @@ const checkPasswordEntered = async (
           tokenGener,
         });
       } else {
-        return res
-          .status(401)
-          .send({ message: "Incorrect Email and/or Password" });
+        return res.status(401).send({ message: "Incorrect Password" });
       }
     }
   } catch (e) {
@@ -104,5 +114,3 @@ const checkPasswordEntered = async (
     return res.status(500).send({ message: "Internal Server Error" });
   }
 };
-
-

@@ -39,11 +39,12 @@ export const update = async (req: Request, res: Response) => {
 
       //Retorna o usuario pelo Token
       const userToken = await authServices.decodedToken(
-        req.headers.authorization
+        req.headers.authorization,
       );
 
-      //Garante que o usuario é user
+      //Garante que o usuario é user e agencia igual ao token
       req.body.role = userToken.role;
+      req.body.agencyId = userToken.agencyId;
 
       //Verifica se o email passado é valido e se confere com o login
       if (!userAuth) {
@@ -53,7 +54,7 @@ export const update = async (req: Request, res: Response) => {
           if (passwordBody) {
             //caso atualize a senha -> encripitação da senha
             req.body.password = await userServices.verifyPasswordEncryptUpdate(
-              passwordBody
+              passwordBody,
             );
             updateSuccessful(req.body, userAuth.id, res);
           } else {
@@ -78,12 +79,12 @@ export const destroy = async (req: Request, res: Response) => {
   try {
     //Retorna o usuario pelo Token
     const userToken = await authServices.decodedToken(
-      req.headers.authorization
+      req.headers.authorization,
     );
 
     //Usuario do login (id do token) terá a conta excluida
     const usersDeleteById = await userRepository.destroy(
-      parseInt(userToken.id)
+      parseInt(userToken.id),
     );
     res.json({
       success: true,
@@ -100,11 +101,11 @@ export const destroy = async (req: Request, res: Response) => {
 export const updateSuccessful = async (
   reqBody: any,
   ReqParamsId: any,
-  res: Response
+  res: Response,
 ) => {
   const usersUpdateById = await userRepository.update(
     parseInt(ReqParamsId),
-    reqBody
+    reqBody,
   );
   res.json({
     success: true,
@@ -112,5 +113,3 @@ export const updateSuccessful = async (
     payload: usersUpdateById,
   });
 };
-
-

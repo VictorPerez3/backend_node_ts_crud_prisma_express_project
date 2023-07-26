@@ -4,19 +4,30 @@ import * as authServices from "../services/auth.services";
 //middleware para verificar se o token de autenticação fornecido na requisição é válido
 
 export const verifyToken = async (req: Request, res: Response, next: any) => {
-
   //obtém o token de autenticação presente no cabeçalho da requisição
-  const tokenHeader = req.headers.authorization;
-
-  if (!tokenHeader) {
-    return res.status(401).send({ message: "Required Token" });
-  }
-
-  try {
-    // Verifica e valide o token
+  const tokenHeader: any = req.headers.authorization;
+  // Verifica e valide o token (valid;invalid;blacklist)
+  const returnValidateTokenService: string =
     await authServices.validateTokenService(tokenHeader);
-    next();
+  try {
+    if (!tokenHeader) {
+      return res.status(401).send({ message: "Required Token" });
+    }
+
+    if (returnValidateTokenService === "invalid") {
+      return res.status(401).send({ message: "Invalid Credentials" });
+    }
+
+    if (returnValidateTokenService === "black list token") {
+      return res.status(401).send({ message: "Login required" });
+    }
+
+    if (returnValidateTokenService === "valid") {
+      next();
+    }
   } catch (e) {
-    res.status(401).send({ message: "Invalid Credentials" });
+    res.status(500).json({
+      error: "Server error!",
+    });
   }
 };

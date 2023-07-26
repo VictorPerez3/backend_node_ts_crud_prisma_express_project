@@ -14,14 +14,14 @@ const adminRoutes = (app: any) => {
   app.post(
     "/admin/register",
     validate(createUserSchema),
-    adminController.createAdmin
+    adminController.createAdmin,
   );
 
   //Atualiza dados de usuarios tipo <user/admin> ja criados (necessario token e ser admin)
   app.put(
     "/admin/updatebyemail",
     verifyToken,
-    adminController.updateByEmailUser
+    adminController.updateByEmailUser,
   );
 
   //Deleta usuarios tipo <user/admin> ja criados (necessario token e ser admin)

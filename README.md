@@ -83,10 +83,10 @@ DATABASE_URL=
 Neste ponto, você tem um esquema Prisma, mas nenhum banco de dados ainda. Execute o seguinte comando em seu terminal para criar um banco de dados PostgreSql e as tabelas representadas por seus modelos:
 
 ```
-#Criar o banco de dos a partir do esquema Prisma:
+#Criar o arquivo de migração do banco de dados, a partir do esquema Prisma:
 npx prisma migrate dev --name init
 
-#Comando para atualizar o esquema do D.B:
+#(OPCIONAL) Comando para atualizar o esquema do D.B:
 npx prisma db push
 ```
 
@@ -128,6 +128,13 @@ yarn start-dev
 | `post /admin/register`         | Criação de usuarios (user/admin)                         |
 | `put /admin/updatebyemail`     | Pelo email, atualiza dados de usuarios tipo (user/admin) |
 | `delete /admin/deletebyid/:id` | Deleta por ID, usuarios tipo (user/admin)                |
+
+| Client                      | Description                                      |
+| --------------------------- | ------------------------------------------------ |
+| `get /client`               | Retorna os clientes dentro da agencia logada     |
+| `post /client/register`     | Criação de clientes dentro da agencia logada     |
+| `put /client/update/:id`    | Atualiza dados (nome e imagem) do cliente por id |
+| `delete /client/delete/:id` | Delete clientes dentro da agencia por id         |
 
 # 6) Outras Ferramentas / Tecnologias
 
