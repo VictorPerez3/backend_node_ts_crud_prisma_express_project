@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,110 +31,80 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
-const user_repository_1 = __importDefault(require("../repositories/user.repository"));
-const bcryptjs_1 = __importDefault(require("bcryptjs"));
-//lida com as requisições HTTP e chama os métodos correspondentes
-//do serviço.
-class UserController {
-}
-_a = UserController;
-UserController.ping = (req, res, next) => {
-    res.json("ok");
-};
-//////////////////////////////////////
-UserController.getAll = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.updateSuccessful = exports.destroy = exports.update = void 0;
+const userRepository = __importStar(require("../repositories/user.repository"));
+const userServices = __importStar(require("../services/user.services"));
+const authServices = __importStar(require("../services/auth.services"));
+//Atualiza dados (nome e senha) da conta que esta logada (necessario token)
+const update = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const users = yield user_repository_1.default.getAll();
-        console.log(users);
-        res.json({
-            success: true,
-            payload: users,
-        });
-        return next();
+        const { email: emailBody, password: passwordBody } = req.body;
+        if (emailBody) {
+            //Repository: Busca o usuario com o email fornecido
+            const userAuth = yield userRepository.getUserByEmail(emailBody);
+            //Retorna o usuario pelo Token
+            const userToken = yield authServices.decodedTokenWithAgency(req.headers.authorization);
+            //Garante que o usuario é user e agencia igual ao token
+            req.body.role = userToken.role;
+            req.body.agencyId = userToken.agencyId;
+            //Verifica se o email passado é valido e se confere com o login
+            if (!userAuth) {
+                return res.status(403).send({ message: "Incorrect Email" });
+            }
+            else {
+                if (emailBody === userToken.email) {
+                    if (passwordBody) {
+                        //caso atualize a senha -> encripitação da senha
+                        req.body.password = yield userServices.verifyPasswordEncryptUpdate(passwordBody);
+                        (0, exports.updateSuccessful)(req.body, userAuth.id, res);
+                    }
+                    else {
+                        (0, exports.updateSuccessful)(req.body, userAuth.id, res);
+                    }
+                }
+            }
+        }
+        else {
+            return res.status(402).send({
+                message: "Email not informed ",
+            });
+        }
     }
     catch (err) {
         res.status(500).json({
             error: "Server error!",
         });
-        return next(err);
     }
 });
-////////////////////////////////////////
-UserController.getById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.update = update;
+//Exclui conta que esta logada (necessario token)
+const destroy = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id } = req.params;
-        const user = yield user_repository_1.default.getById(Number(id));
+        //Retorna o usuario pelo Token
+        const userToken = yield authServices.decodedTokenWithAgency(req.headers.authorization);
+        //Usuario do login (id do token) terá a conta excluida
+        const usersDeleteById = yield userRepository.destroyUserById(parseInt(userToken.id));
         res.json({
             success: true,
-            payload: user,
-        });
-        return next();
-    }
-    catch (err) {
-        res.status(500).json({
-            error: "Server error!",
-        });
-        return next(err);
-    }
-});
-//////////////////////////////////////////
-UserController.create = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        //encripitação da senha
-        const hashPassword = yield bcryptjs_1.default.hash(req.body.password, 10);
-        req.body.password = hashPassword;
-        const userCreate = yield user_repository_1.default.create(req.body);
-        res.json({
-            success: true,
-            payload: userCreate,
-        });
-        return next();
-    }
-    catch (err) {
-        res.status(500).json({
-            error: "Server error!",
-        });
-        return next(err);
-    }
-});
-////////////////////////////////////////////
-UserController.update = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const usersUpdateById = yield user_repository_1.default.update(parseInt(req.params.id), req.body);
-        res.json({
-            success: true,
-            payload: usersUpdateById,
-        });
-        return next();
-    }
-    catch (err) {
-        res.status(500).json({
-            error: "Server error!",
-        });
-        return next(err);
-    }
-});
-/////////////////////////////////////////////
-UserController.destroy = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const usersDeleteById = yield user_repository_1.default.destroy(parseInt(req.params.id));
-        res.json({
-            success: true,
+            message: "Deleted logged cadaster",
             payload: usersDeleteById,
         });
-        return next();
     }
     catch (err) {
         res.status(500).json({
             error: "Server error!",
         });
-        return next(err);
     }
 });
-exports.default = UserController;
+exports.destroy = destroy;
+const updateSuccessful = (reqBody, ReqParamsId, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const usersUpdateById = yield userRepository.updateUserById(parseInt(ReqParamsId), reqBody);
+    res.json({
+        success: true,
+        message: "Updated logged cadaster",
+        payload: usersUpdateById,
+    });
+});
+exports.updateSuccessful = updateSuccessful;
 //# sourceMappingURL=user.controller.js.map

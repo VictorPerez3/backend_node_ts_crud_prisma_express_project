@@ -5,27 +5,28 @@ import { validate } from "../middlewares/validate";
 
 const adminRoutes = (app: any) => {
   //Retorna todos os usuarios com senhas hasheada (necessario token e ser admin)
-  app.get("/admin", verifyToken, adminController.getAll);
+  app.get("/admin/users", verifyToken, adminController.getAll);
 
   //Retorna usuario pelo ID (necessario token e ser admin)
-  app.get("/admin/:id", verifyToken, adminController.getById);
+  app.get("/admin/users/:id", verifyToken, adminController.getById);
 
   //Criação de usuarios <user/admin> (com validação de cadastro) - (necessario token e ser admin)
   app.post(
     "/admin/register",
+    verifyToken,
     validate(createUserSchema),
-    adminController.createAdmin,
+    adminController.createAdmin
   );
 
   //Atualiza dados de usuarios tipo <user/admin> ja criados (necessario token e ser admin)
   app.put(
     "/admin/updatebyemail",
     verifyToken,
-    adminController.updateByEmailUser,
+    adminController.updateByEmailUser
   );
 
   //Deleta usuarios tipo <user/admin> ja criados (necessario token e ser admin)
-  app.delete("/admin/deletebyid/:id", verifyToken, adminController.destroyById);
+  app.delete("/admin/delete/:id", verifyToken, adminController.destroyById);
 };
 
 export default adminRoutes;

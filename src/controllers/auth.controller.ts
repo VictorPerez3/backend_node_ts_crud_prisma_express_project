@@ -1,16 +1,35 @@
 import { Request, Response } from "express";
 import * as authServices from "../services/auth.services";
 import * as authRepository from "../repositories/auth.repository";
+import * as userRepository from "../repositories/user.repository";
+import * as superAdminRepository from "../repositories/superAdmin.repository";
 import bcrypt from "bcryptjs";
+
+//Login SuperAdmin
+export const superAdminLogin = async (req: Request, res: Response) => {
+  const { email: emailBody, password: passwordBody } = req.body;
+
+  //Repository: Busca o superadmin com o email fornecido
+  const superAdminAuth = await superAdminRepository.getSuperAdminByEmail(
+    emailBody
+  );
+
+  if (!superAdminAuth) {
+    return res.status(404).send({ message: "Superadmin not found" });
+  }
+
+  //Login: Verifica se a senha digitada é válida, igual à senha do banco de dados (superadmin criado)
+  await checkPasswordEntered(passwordBody, superAdminAuth, res);
+};
 
 //Login User
 export const userLogin = async (req: Request, res: Response) => {
   const { email: emailBody, password: passwordBody } = req.body;
 
-  //Repository: Busca o usuario com o email fornecido
-  const userAuth = await authRepository.findUserAuthRepository(emailBody);
+  //Repository: Busca o usuário com o email fornecido
+  const userAuth = await userRepository.getUserByEmail(emailBody);
 
-  //Login:Verifica se a senha digitada é valida, igual a senha do banco de dados (usuario criado)
+  //Login:Verifica se a senha digitada é válida, igual a senha do banco de dados (usuário criado)
   await checkPasswordEntered(passwordBody, userAuth, res);
 };
 
@@ -19,7 +38,7 @@ export const adminLogin = async (req: Request, res: Response) => {
   const { email: emailBody, password: passwordBody } = req.body;
 
   //Repository: Busca o usuario com o email fornecido
-  const userAuth = await authRepository.findUserAuthRepository(emailBody);
+  const userAuth = await userRepository.getUserByEmail(emailBody);
 
   //Verifica se o usuario é admin
   if (!userAuth) {
@@ -29,13 +48,14 @@ export const adminLogin = async (req: Request, res: Response) => {
       //Login:Caso role=admin, realiza login
       return checkPasswordEntered(passwordBody, userAuth, res);
     } else {
-      return res.status(401).send({
+      return res.status(405).send({
         message: "User account does not have Admin permission to login",
       });
     }
   }
 };
 
+//Logout
 export const logout = async (req: Request, res: Response) => {
   //Verifica se o token esta presente no Header
   if (!req.headers.authorization) {
@@ -46,12 +66,12 @@ export const logout = async (req: Request, res: Response) => {
     //Verifica se o token esta expirado
     if (authServices.isTokenExpired(req.headers.authorization)) {
       return res
-        .status(401)
+        .status(402)
         .send({ message: "Token expired OR No account logged in" });
     } else {
       // Verifica e valida o token (LOGOUT)
       if (!authServices.validateTokenService(req.headers.authorization)) {
-        return res.status(401).send({ message: "Error verifying token" });
+        return res.status(403).send({ message: "Error verifying token" });
       } else {
         const replace = req.headers.authorization.replace("Bearer ", "");
         //Movendo o token de Logout para tabela "BlackListToken"
@@ -68,11 +88,11 @@ export const verifyLoggedUser = async (req: Request, res: Response) => {
     //Verifica se o token esta expirado
     if (authServices.isTokenExpired(req.headers.authorization)) {
       return res
-        .status(401)
+        .status(402)
         .send({ message: "Token expired OR No account logged in" });
     } else {
-      const userInfo = await authServices.decodedToken(
-        req.headers.authorization,
+      const userInfo = await authServices.decodedTokenWithAgency(
+        req.headers.authorization
       );
       return res.json({
         success: true,
@@ -90,27 +110,27 @@ export const verifyLoggedUser = async (req: Request, res: Response) => {
 const checkPasswordEntered = async (
   passwordBody: string,
   userAuth: any,
-  res: Response,
+  res: Response
 ) => {
-  //Verifica se o usuario existe no banco de dados
-  try {
-    if (!userAuth) {
-      return res.status(401).send({ message: "Incorrect Email" });
-    } else {
-      //Verifica se a senha digitada é valida
-      if (bcrypt.compareSync(passwordBody, userAuth.password)) {
-        //gerado um token de autenticação com jwt
-        const tokenGener = await authServices.tokenGenerated(userAuth);
-        return res.status(200).send({
-          message: "Authentication was a success",
-          tokenGener,
-        });
-      } else {
-        return res.status(401).send({ message: "Incorrect Password" });
-      }
+  //Verifica se o usuário existe no banco de dados
+  if (!userAuth) {
+    return res.status(403).send({ message: "Incorrect Email" });
+  }
+
+  //Verifica se a senha digitada é válida
+  if (bcrypt.compareSync(passwordBody, userAuth.password)) {
+    try {
+      //gera um token de autenticação com jwt
+      const tokenGener = await authServices.tokenGenerated(userAuth);
+      return res.status(200).send({
+        message: "Authentication was a success",
+        tokenGener,
+      });
+    } catch (e) {
+      console.log(e);
+      return res.status(500).send({ message: "Server Error" });
     }
-  } catch (e) {
-    console.log(e);
-    return res.status(500).send({ message: "Internal Server Error" });
+  } else {
+    return res.status(402).send({ message: "Incorrect Password" });
   }
 };

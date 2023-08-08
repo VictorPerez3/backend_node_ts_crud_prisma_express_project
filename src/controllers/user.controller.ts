@@ -1,32 +1,7 @@
 import * as userRepository from "../repositories/user.repository";
-import * as authRepository from "../repositories/auth.repository";
 import { Request, Response } from "express";
 import * as userServices from "../services/user.services";
 import * as authServices from "../services/auth.services";
-
-//Criação de usuarios user (com validação de cadastro)
-export const createUser = async (req: Request, res: Response) => {
-  try {
-    //encripitação da senha
-    req.body.password = await userServices.passwordEncrypt(req.body.password);
-
-    //Garante que o usuario é user
-    req.body.role = "user";
-
-    //Criado usuario com senha encriptada
-    const userCreate = await userRepository.create(req.body);
-
-    res.json({
-      success: true,
-      message: "Cadaster type <User> created",
-      payload: userCreate,
-    });
-  } catch (err) {
-    res.status(500).json({
-      error: "Server error!",
-    });
-  }
-};
 
 //Atualiza dados (nome e senha) da conta que esta logada (necessario token)
 export const update = async (req: Request, res: Response) => {
@@ -35,10 +10,10 @@ export const update = async (req: Request, res: Response) => {
 
     if (emailBody) {
       //Repository: Busca o usuario com o email fornecido
-      const userAuth = await authRepository.findUserAuthRepository(emailBody);
+      const userAuth = await userRepository.getUserByEmail(emailBody);
 
       //Retorna o usuario pelo Token
-      const userToken = await authServices.decodedToken(
+      const userToken = await authServices.decodedTokenWithAgency(
         req.headers.authorization,
       );
 
@@ -48,7 +23,7 @@ export const update = async (req: Request, res: Response) => {
 
       //Verifica se o email passado é valido e se confere com o login
       if (!userAuth) {
-        return res.status(401).send({ message: "Incorrect Email" });
+        return res.status(403).send({ message: "Incorrect Email" });
       } else {
         if (emailBody === userToken.email) {
           if (passwordBody) {
@@ -63,7 +38,7 @@ export const update = async (req: Request, res: Response) => {
         }
       }
     } else {
-      return res.status(401).send({
+      return res.status(402).send({
         message: "Email not informed ",
       });
     }
@@ -78,12 +53,12 @@ export const update = async (req: Request, res: Response) => {
 export const destroy = async (req: Request, res: Response) => {
   try {
     //Retorna o usuario pelo Token
-    const userToken = await authServices.decodedToken(
+    const userToken = await authServices.decodedTokenWithAgency(
       req.headers.authorization,
     );
 
     //Usuario do login (id do token) terá a conta excluida
-    const usersDeleteById = await userRepository.destroy(
+    const usersDeleteById = await userRepository.destroyUserById(
       parseInt(userToken.id),
     );
     res.json({
@@ -103,7 +78,7 @@ export const updateSuccessful = async (
   ReqParamsId: any,
   res: Response,
 ) => {
-  const usersUpdateById = await userRepository.update(
+  const usersUpdateById = await userRepository.updateUserById(
     parseInt(ReqParamsId),
     reqBody,
   );

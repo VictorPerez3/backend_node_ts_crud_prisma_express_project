@@ -4,16 +4,17 @@ import routes from "./routes";
 
 dotenv.config();
 
-const app = express();
+// Test - server
+export const startServer = (port = process.env.SERVER_PORT) => {
+  const app = express();
 
-//middleware - Parsing do Body da requisição(possibilita conseguir ler o json)
-app.use(express.json());
+  //middleware - Parsing do Body da requisição(possibilita conseguir ler o json)
+  app.use(express.json());
 
-//Import de routers
-routes(app);
+  //Import de routers
+  routes(app);
 
-// start the Express server
-const port = process.env.SERVER_PORT; // default port to listen
-app.listen(port, () => {
-  console.log(`server started at http://localhost:${port}`);
-});
+  return app.listen(port, () => {
+    console.log(`server started at http://localhost:${port}`);
+  });
+};

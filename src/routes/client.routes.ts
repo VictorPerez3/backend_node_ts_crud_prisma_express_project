@@ -15,10 +15,10 @@ const clientRoutes = (app: any) => {
     clientController.createClient,
   );
 
-  //Atualiza dados (nome e imagem) do cliente por id
+  //Atualiza dados (nome e imagem) do cliente por id (necessario token)
   app.put("/client/update/:id", verifyToken, clientController.updateByIdClient);
 
-  //Delete clientes dentro da agencia por id
+  //Deleta clientes dentro da agencia por id (necessario token)
   app.delete(
     "/client/delete/:id",
     verifyToken,

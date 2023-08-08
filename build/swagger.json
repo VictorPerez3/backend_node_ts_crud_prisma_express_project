@@ -1,0 +1,1180 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Backend_node_ts_crud_prisma_express_project",
+        "description": "It's a system for building and managing your database. It has validation, authentication and user access control.",
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        },
+        "schemas": {
+            "Client": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Example Client Name"
+                    },
+                    "agencyId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "123e4567-e89b-12d3-a456-426655440000"
+                    },
+                    "Users": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "789e0123-e45f-67ab-cdef-012345678900"
+                    }
+                }
+            },
+            "User": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "format": "Name",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "johndoe@example.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "MySecretPassword123"
+                    },
+                    "agencyId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "123e4567-e89b-12d3-a456-426655440000"
+                    },
+                    "customers": {
+                        "name": "clientId",
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "456e7890-f123-45ab-cdef-678901234567"
+                    }
+                }
+            },
+            "Agency": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Example Agency Name"
+                    },
+                    "cnpj": {
+                        "type": "string",
+                        "format": "CNPJ",
+                        "example": "12.345.678/0001-90"
+                    },
+                    "users": {
+                        "type": "string",
+                        "format": "uuid",
+                        "name": "userId",
+                        "example": "789e0123-e45f-67ab-cdef-012345678900"
+                    },
+                    "Client": {
+                        "type": "string",
+                        "format": "uuid",
+                        "name": "clientId",
+                        "example": "456e7890-f123-45ab-cdef-678901234567"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "SuperAdmin",
+            "description": "full control to the database"
+        },
+        {
+            "name": "Admin",
+            "description": "Users <role=admin> - Affiliated with an agency and having access to its users"
+        },
+        {
+            "name": "Users",
+            "description": "Users <role=user> - Affiliated with an agency and having access to its clients"
+        },
+        {
+            "name": "Client",
+            "description": "Leads affiliated with the agency"
+        },
+        {
+            "name": "Auth",
+            "description": "Authentication Routes"
+        }
+    ],
+    "paths": {
+        "/client": {
+            "get": {
+                "tags": ["Client"],
+                "security": [{ "bearerAuth": [] }],
+                "summary": "Returns clients within the branch of the logged in user",
+                "responses": {
+                    "200": {
+                        "description": "success: true | payload: allClients"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "403": {
+                        "description": "There are no clients in this agency"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                }
+            }
+        },
+        "/client/register": {
+            "post": {
+                "tags": ["Client"],
+                "summary": "Creation of clients within the branch of the logged in user",
+                "security": [{ "bearerAuth": [] }],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/definitions/CreateClient"
+                            }
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "Client",
+                        "in": "body",
+                        "description": "name and email are required",
+                        "schema": {
+                            "$ref": "#/definitions/CreateClient"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cadaster type <Client> created | payload: clientCreate"
+                    },
+                    "400": {
+                        "description": "Error message of validate(createClientSchemas)"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                }
+            }
+        },
+        "/client/update/:id": {
+            "put": {
+                "tags": ["Client"],
+                "summary": "Update client data (name and image) by id",
+                "parameters": [
+                    {
+                        "name": "Client",
+                        "in": "body",
+                        "description": "Client that we want to update",
+                        "schema": {
+                            "$ref": "#/definitions/CreateClient"
+                        }
+                    },
+                    {
+                        "name": "Id Client",
+                        "in": "params",
+                        "description": "/client/update/6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated client | payload: clientUpdateById"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "403": {
+                        "description": "In this agency there is no client with the informed id"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                }
+            }
+        },
+        "/client/delete/:id": {
+            "delete": {
+                "tags": ["Client"],
+                "summary": "Delete clients within the agency by id",
+                "parameters": [
+                    {
+                        "name": "Id Client",
+                        "in": "params",
+                        "description": "/client/delete/6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Deleted client | payload: clientDeleteById"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "402": {
+                        "description": "Forbidden to exclude clients outside the agency"
+                    },
+                    "403": {
+                        "description": "In this agency there is no client with the informed id"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                }
+            }
+        },
+        "/users/update": {
+            "put": {
+                "tags": ["Users"],
+                "summary": "(Admin/user) updates data (name and password) of the account that is logged in",
+                "parameters": [
+                    {
+                        "name": "Users",
+                        "in": "body",
+                        "description": "User that we want to create",
+                        "schema": {
+                            "$ref": "#/definitions/CreateUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated logged cadaster | payload: usersUpdateById"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "402": {
+                        "description": "Email not informed"
+                    },
+                    "403": {
+                        "description": "Incorrect Email"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                }
+            }
+        },
+        "/users/delete": {
+            "delete": {
+                "tags": ["Users"],
+                "summary": "(Admin/user) delete logged in user",
+                "responses": {
+                    "200": {
+                        "description": "Deleted logged cadaster | payload: usersDeleteById"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                }
+            }
+        },
+        "/admin/users": {
+            "get": {
+                "tags": ["Admin"],
+                "summary": "Returns all users with hashed passwords",
+                "responses": {
+                    "200": {
+                        "description": "success: true | payload: users"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "403": {
+                        "description": "User account does not have Admin permission to Get all Accounts"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/admin/users/{id}": {
+            "get": {
+                "tags": ["Admin"],
+                "summary": "Returns user by ID",
+                "parameters": [
+                    {
+                        "name": "Id User",
+                        "in": "path",
+                        "description": "ID of user to return",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "JWT access token",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success: true | payload: users"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "403": {
+                        "description": "User account does not have Admin permission to Get all Accounts"
+                    },
+                    "402": {
+                        "description": "User not found"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                },
+                "security": [{ "bearerAuth": [] }]
+            }
+        },
+        "/admin/register": {
+            "post": {
+                "tags": ["Admin"],
+                "summary": "Creating Users <user/admin>",
+                "parameters": [
+                    {
+                        "name": "User",
+                        "in": "body",
+                        "description": "name, email, password, agencyId, role are required",
+                        "schema": {
+                            "$ref": "#/definitions/CreateUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Cadaster created | payload: userCreate"
+                    },
+                    "400": {
+                        "description": "Error message of validate(createUserSchemas)"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "403": {
+                        "description": "User account does not have Admin permission to Create Admin Account"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                }
+            }
+        },
+        "/admin/updatebyemail": {
+            "put": {
+                "tags": ["Admin"],
+                "summary": "Update data of users type <user/admin> already created",
+                "parameters": [
+                    {
+                        "name": "User",
+                        "in": "body",
+                        "description": "User that we want to update",
+                        "schema": {
+                            "$ref": "#/definitions/CreateUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated logged cadaster | payload: usersUpdateById"
+                    },
+                    "400": {
+                        "description": "Email not informed"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required | Incorrect Email"
+                    },
+                    "403": {
+                        "description": "User account does not have Admin permission to Update by Email"
+                    },
+                    "405": {
+                        "description": "It is not allowed to change registrations of another agency"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                }
+            }
+        },
+        "/admin/delete/:id": {
+            "delete": {
+                "tags": ["Users"],
+                "summary": "(Admin/user) delete logged in user",
+                "parameters": [
+                    {
+                        "name": "Id User",
+                        "in": "params",
+                        "description": "/admin/delete/6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Cadaster deleted successfully | payload: usersDeleteById"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "403": {
+                        "description": "User account does not have Admin permission to Delete by ID"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "405": {
+                        "description": "It is not allowed to change registrations of another agency"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                }
+            }
+        },
+        "/superadmin/agency": {
+            "get": {
+                "tags": ["SuperAdmin"],
+                "summary": "Returns agencies",
+                "responses": {
+                    "200": {
+                        "description": "success: true | payload: allAgencies"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "403": {
+                        "description": "User account does not have Super Admin permission to Get all Agencies"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/superadmin/agency/:id": {
+            "get": {
+                "tags": ["SuperAdmin"],
+                "summary": "Returns agency by id",
+                "responses": {
+                    "200": {
+                        "description": "success: true | payload: agenciesById"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "403": {
+                        "description": "User account does not have Super Admin permission to Get Agency by Id"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/superadmin/agency/register": {
+            "post": {
+                "tags": ["SuperAdmin"],
+                "summary": "Register agency",
+                "parameters": [
+                    {
+                        "name": "Agency",
+                        "in": "body",
+                        "description": "name are required",
+                        "schema": {
+                            "$ref": "#/definitions/CreateAgency"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success: true | payload: agencyCreate"
+                    },
+                    "400": {
+                        "description": "Error message of validate(createAgencySchemas)"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "403": {
+                        "description": "User account does not have Super Admin permission to create Agency"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/superadmin/users/register": {
+            "post": {
+                "tags": ["SuperAdmin"],
+                "summary": "Register user",
+                "parameters": [
+                    {
+                        "name": "User",
+                        "in": "body",
+                        "description": "name, email, password, agencyId, role are required",
+                        "schema": {
+                            "$ref": "#/definitions/CreateUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success: true | payload: userCreate"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "403": {
+                        "description": "User account does not have Super Admin permission to create User"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/superadmin/client/register": {
+            "post": {
+                "tags": ["SuperAdmin"],
+                "summary": "Register client",
+                "parameters": [
+                    {
+                        "name": "Client",
+                        "in": "body",
+                        "description": "name and email are required",
+                        "schema": {
+                            "$ref": "#/definitions/CreateClient"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success: true | payload: clientCreate"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "403": {
+                        "description": "User account does not have Super Admin permission to create Client"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/superadmin/agency/update/:id": {
+            "put": {
+                "tags": ["SuperAdmin"],
+                "summary": "Update agency by id",
+                "parameters": [
+                    {
+                        "name": "Agency",
+                        "in": "body",
+                        "description": "Agency that we want to update",
+                        "schema": {
+                            "$ref": "#/definitions/Agency"
+                        }
+                    },
+                    {
+                        "name": "Id Agency",
+                        "in": "params",
+                        "description": "/superadmin/agency/update/6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated agency | payload: agencyUpdateById"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "403": {
+                        "description": "User account does not have Super Admin permission to Update agency"
+                    },
+                    "402": {
+                        "description": "No agency found with this id"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/superadmin/users/update/:id": {
+            "put": {
+                "tags": ["SuperAdmin"],
+                "summary": "Update user by id",
+                "parameters": [
+                    {
+                        "name": "User",
+                        "in": "body",
+                        "description": "User that we want to update",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    {
+                        "name": "Id User",
+                        "in": "params",
+                        "description": "/superadmin/users/update/6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated user | payload: userUpdateById"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "403": {
+                        "description": "User account does not have Super Admin permission to Update User"
+                    },
+                    "402": {
+                        "description": "No User found with this id"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/superadmin/client/update/:id": {
+            "put": {
+                "tags": ["SuperAdmin"],
+                "summary": "Update client by id",
+                "parameters": [
+                    {
+                        "name": "Client",
+                        "in": "body",
+                        "description": "Client that we want to update",
+                        "schema": {
+                            "$ref": "#/definitions/Client"
+                        }
+                    },
+                    {
+                        "name": "Id Client",
+                        "in": "params",
+                        "description": "/superadmin/client/update/6"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Updated client | payload: clientUpdateById"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "403": {
+                        "description": "User account does not have Super Admin permission to Update client"
+                    },
+                    "402": {
+                        "description": "No client found with this id"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/superadmin/agency/delete/:id": {
+            "delete": {
+                "tags": ["SuperAdmin"],
+                "summary": "Delete Agency by ID",
+                "responses": {
+                    "200": {
+                        "description": "Deleted Agency | payload: agencyDeleteById"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "403": {
+                        "description": "User account does not have Super Admin permission to Delete Agency by Id"
+                    },
+                    "402": {
+                        "description": "No agency found with this id"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                }
+            }
+        },
+        "/superadmin/users/delete/:id": {
+            "delete": {
+                "tags": ["SuperAdmin"],
+                "summary": "Delete User by ID",
+                "responses": {
+                    "200": {
+                        "description": "Deleted User | payload: userDeleteById"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "403": {
+                        "description": "User account does not have Super Admin permission to Delete User by Id"
+                    },
+                    "402": {
+                        "description": "No User found with this id"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                }
+            }
+        },
+        "/superadmin/client/delete/:id": {
+            "delete": {
+                "tags": ["SuperAdmin"],
+                "summary": "Delete Client by ID",
+                "responses": {
+                    "200": {
+                        "description": "Deleted Client | payload: clientDeleteById"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "403": {
+                        "description": "User account does not have Super Admin permission to Delete Client by Id"
+                    },
+                    "402": {
+                        "description": "No Client found with this id"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                }
+            }
+        },
+        "/superadmin/login": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Login SuperAdmin",
+                "parameters": [
+                    {
+                        "name": "SuperAdmin",
+                        "in": "body",
+                        "description": "SuperAdmin Login process",
+                        "schema": {
+                            "$ref": "#/definitions/LoginSuperAdmin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Authentication was a success | payload: tokenGener"
+                    },
+                    "401": {
+                        "description": "Incorrect Email"
+                    },
+                    "402": {
+                        "description": "Incorrect Password"
+                    },
+                    "404": {
+                        "description": "Superadmin not found"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                }
+            }
+        },
+        "/users/login": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Login User",
+                "parameters": [
+                    {
+                        "name": "Users <role=user>",
+                        "in": "body",
+                        "description": "User Login process",
+                        "schema": {
+                            "$ref": "#/definitions/LoginUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Authentication was a success | payload: tokenGener"
+                    },
+                    "401": {
+                        "description": "Incorrect Email"
+                    },
+                    "402": {
+                        "description": "Incorrect Password"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                }
+            }
+        },
+        "/admin/login": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Login Admin",
+                "parameters": [
+                    {
+                        "name": "Users <role=admin>",
+                        "in": "body",
+                        "description": "Admin Login process",
+                        "schema": {
+                            "$ref": "#/definitions/LoginUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Authentication was a success | payload: tokenGener"
+                    },
+                    "403": {
+                        "description": "Incorrect Email"
+                    },
+                    "402": {
+                        "description": "Incorrect Password"
+                    },
+                    "401": {
+                        "description": "Incorrect Email and/or Password"
+                    },
+                    "405": {
+                        "description": "User account does not have Admin permission to login"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": ["Auth"],
+                "summary": "Logout",
+                "responses": {
+                    "200": {
+                        "description": "Logout successfully"
+                    },
+                    "401": {
+                        "description": "Authentication token not provided"
+                    },
+                    "402": {
+                        "description": "Token expired OR No account logged in"
+                    },
+                    "403": {
+                        "description": "Error verifying token"
+                    }
+                }
+            }
+        },
+        "/verify": {
+            "get": {
+                "tags": ["Auth"],
+                "summary": "Check who is logged in (name, email, role, agency)",
+                "responses": {
+                    "200": {
+                        "description": "success: true | payload: userInfo"
+                    },
+                    "401": {
+                        "description": "Required Token | Invalid Credentials | Login required"
+                    },
+                    "402": {
+                        "description": "Token expired OR No account logged in"
+                    },
+                    "500": {
+                        "description": "Server error!"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "LoginModel": {
+            "type": "object",
+            "properties": {
+                "username": { "type": "string" },
+                "password": { "type": "string" }
+            }
+        },
+        "User": {
+            "required": ["body"],
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "required": [
+                        "id",
+                        "name",
+                        "email",
+                        "password",
+                        "role",
+                        "agencyId",
+                        "agency",
+                        "createdAt",
+                        "updatedAt"
+                    ],
+                    "properties": {
+                        "id": { "type": "integer" },
+                        "name": { "type": "string" },
+                        "email": { "type": "string", "format": "email" },
+                        "password": { "type": "string" },
+                        "role": { "type": "string", "enum": ["user", "admin"] },
+                        "agencyId": { "type": "integer" },
+                        "agency": { "type": "Agency" },
+                        "createdAt": { "type": "dateTime" },
+                        "updatedAt": { "type": "dateTime" }
+                    }
+                }
+            }
+        },
+        "CreateUser": {
+            "required": ["body"],
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "required": ["name", "email", "password", "agencyId"],
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "minLength": 3,
+                            "maxLength": 255
+                        },
+                        "email": {
+                            "type": "string",
+                            "minLength": 3,
+                            "format": "email"
+                        },
+                        "password": {
+                            "type": "string",
+                            "minLength": 8,
+                            "maxLength": 32
+                        },
+                        "agencyId": {
+                            "type": "integer",
+                            "minimum": 1
+                        },
+                        "role": {
+                            "type": "string",
+                            "enum": ["user", "admin"]
+                        }
+                    }
+                }
+            }
+        },
+        "LoginSuperAdmin": {
+            "required": ["body"],
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "required": ["email", "password"],
+                    "properties": {
+                        "email": {
+                            "type": "string",
+                            "format": "email"
+                        },
+                        "password": {
+                            "type": "string",
+                            "minLength": 8
+                        }
+                    }
+                }
+            }
+        },
+        "LoginUser": {
+            "required": ["body"],
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "required": ["email", "password"],
+                    "properties": {
+                        "email": {
+                            "type": "string",
+                            "format": "email"
+                        },
+                        "password": {
+                            "type": "string",
+                            "minLength": 8
+                        }
+                    }
+                }
+            }
+        },
+        "CreateClient": {
+            "required": ["body"],
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "required": ["name", "email"],
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "minLength": 3,
+                            "maxLength": 255
+                        },
+                        "email": {
+                            "type": "string",
+                            "minLength": 3,
+                            "format": "email"
+                        }
+                    }
+                }
+            }
+        },
+        "CreateAgency": {
+            "required": ["body"],
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "required": ["name"],
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "minLength": 3,
+                            "maxLength": 255
+                        }
+                    }
+                }
+            }
+        },
+        "Client": {
+            "required": ["body"],
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "required": [
+                        "id",
+                        "name",
+                        "email",
+                        "image",
+                        "enabled",
+                        "agencyId",
+                        "agency",
+                        "createdAt",
+                        "updatedAt"
+                    ],
+                    "properties": {
+                        "id": { "type": "integer" },
+                        "name": { "type": "string" },
+                        "email": { "type": "string", "format": "email" },
+                        "image": { "type": "string" },
+                        "enabled": { "type": "boolean" },
+                        "agencyId": { "type": "integer" },
+                        "agency": { "type": "object" },
+                        "createdAt": { "type": "dateTime" },
+                        "updatedAt": { "type": "dateTime" }
+                    }
+                }
+            }
+        },
+        "Agency": {
+            "required": ["body"],
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "required": [
+                        "id",
+                        "name",
+                        "image",
+                        "enabled",
+                        "users",
+                        "clients",
+                        "createdAt",
+                        "updatedAt"
+                    ],
+                    "properties": {
+                        "id": { "type": "integer" },
+                        "name": { "type": "string" },
+                        "image": { "type": "string" },
+                        "enabled": { "type": "boolean" },
+                        "users": { "type": "object" },
+                        "clients": { "type": "object" },
+                        "createdAt": { "type": "dateTime" },
+                        "updatedAt": { "type": "dateTime" }
+                    }
+                }
+            }
+        }
+    },
+    "security": [
+        {
+            "bearerAuth": []
+        }
+    ],
+    "servers": [
+        {
+            "url": "http://localhost:8080",
+            "description": "Local development server"
+        }
+    ]
+}

@@ -13,5 +13,10 @@ export const createClientSchema = z.object({
       .string({ required_error: "Email address is required" })
       .min(3, "Email must be more than 3 characters")
       .email("Invalid email address"),
+
+      agencyId: z
+      .number({ required_error: "Agency ID is required" })
+      .int("Agency ID must be an integer")
+      .positive("Agency ID must be a positive number"),
   }),
 });

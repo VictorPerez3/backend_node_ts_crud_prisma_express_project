@@ -1,10 +1,11 @@
 import jwt from "jsonwebtoken";
+import * as userRepository from "../repositories/user.repository";
 import * as authRepository from "../repositories/auth.repository";
 
 //Verifica e valide o token (valid;invalid;blacklist)
 export const validateTokenService = async (tokenHeaders: any) => {
   const replace = tokenHeaders.replace("Bearer ", "");
-  const tokenBlacklist = await authRepository.findTokenInBlacklist(replace);
+  const tokenBlacklist = await authRepository.getTokenInBlacklist(replace);
   if (!tokenBlacklist) {
     if (jwt.verify(replace, String(process.env.TOKEN_KEY)) === null) {
       return "invalid";
@@ -31,23 +32,39 @@ export const tokenGenerated = async (userAuth: any) => {
     {
       //Token expira em 24h
       expiresIn: "24h",
-    },
+    }
   );
   return tokenGener;
 };
 
-//Decodificar token
-export const decodedToken = async (reqHeaderAuthorization: any) => {
+//Decodificar token com agencia
+export const decodedTokenWithAgency = async (reqHeaderAuthorization: any) => {
   if (reqHeaderAuthorization) {
     const replace = reqHeaderAuthorization.replace("Bearer ", "");
     const userInfo: any = jwt.verify(replace, String(process.env.TOKEN_KEY));
-    const userInfoWithAgency: any = await authRepository.findUserAuthRepository(
-      userInfo.email,
+    const userInfoWithAgency: any = await userRepository.getUserByEmail(
+      userInfo.email
     );
     if (userInfoWithAgency) {
       // Retorna objeto User do token
       return userInfoWithAgency;
     } else {
+      return null;
+    }
+  } else {
+    return null;
+  }
+};
+
+//Decodificar token de SuperAdmin
+export const decodedTokenSuperAdmin = async (reqHeaderAuthorization: any) => {
+  if (reqHeaderAuthorization) {
+    const replace = reqHeaderAuthorization.replace("Bearer ", "");
+    try {
+      const userInfo: any = jwt.verify(replace, String(process.env.TOKEN_KEY));
+      return userInfo;
+    } catch (error) {
+      // Caso ocorra um erro ao verificar o token, retorna null
       return null;
     }
   } else {

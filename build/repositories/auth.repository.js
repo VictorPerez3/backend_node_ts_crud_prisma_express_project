@@ -9,18 +9,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getTokenInBlacklist = exports.moveTokenToBlacklist = void 0;
 const client_1 = require("@prisma/client");
-//responsável por realizar as operações de autenticação
-//relacionadas ao banco de dados usando o Prisma.
 const prisma = new client_1.PrismaClient();
-class AuthRepository {
-    static authenticate(email) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return yield prisma.users.findFirst({
-                where: { email },
-            });
-        });
-    }
-}
-exports.default = AuthRepository;
+const moveTokenToBlacklist = (tokenReplace) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield prisma.blackListToken.create({
+        data: {
+            token: tokenReplace,
+        },
+    });
+});
+exports.moveTokenToBlacklist = moveTokenToBlacklist;
+const getTokenInBlacklist = (tokenReplace) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield prisma.blackListToken.findUnique({
+        where: { token: tokenReplace },
+    });
+});
+exports.getTokenInBlacklist = getTokenInBlacklist;
 //# sourceMappingURL=auth.repository.js.map

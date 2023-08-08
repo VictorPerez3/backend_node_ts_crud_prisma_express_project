@@ -18,7 +18,7 @@ const validate =
 //utilizando o esquema de validação definido em user.schemas
 (schema) => (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield schema.parse({
+        schema.parse({
             params: req.params,
             query: req.query,
             body: req.body,

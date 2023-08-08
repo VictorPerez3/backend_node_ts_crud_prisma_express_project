@@ -2,27 +2,38 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export const getAll = async () => {
+export const getAllUsers = async () => {
   return await prisma.users.findMany({
+    take: 20, //consulta retorna 20 users
     include: { agency: true },
+    orderBy: {
+      updatedAt: "desc",
+    },
   });
 };
 
-export const getById = async (id: number) => {
+export const getUserById = async (id: number) => {
   return await prisma.users.findUnique({
     where: { id },
     include: { agency: true },
   });
 };
 
-export const create = async (reqBody: any) => {
+export const getUserByEmail = async (email: string) => {
+  return await prisma.users.findUnique({
+    where: { email },
+    include: { agency: true },
+  });
+};
+
+export const createUser = async (reqBody: any) => {
   return await prisma.users.create({
     data: { ...reqBody },
     include: { agency: true },
   });
 };
 
-export const update = async (reqParams: any, reqBody: any) => {
+export const updateUserById = async (reqParams: any, reqBody: any) => {
   return await prisma.users.update({
     where: { id: reqParams },
     data: { ...reqBody },
@@ -30,7 +41,7 @@ export const update = async (reqParams: any, reqBody: any) => {
   });
 };
 
-export const destroy = async (reqParams: any) => {
+export const destroyUserById = async (reqParams: any) => {
   return await prisma.users.delete({
     where: { id: reqParams },
   });

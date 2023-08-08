@@ -1,6 +1,6 @@
 # Backend_Node_TS_Crud_Prisma_Express_Project
 
-`Data de Desenvolvimento/ultima modificação` : 25/07/2023
+`Data de Desenvolvimento/ultima modificação` : 08/08/2023
 
 `Empresa`: Tegrus
 
@@ -22,11 +22,12 @@
     5. Execução do Sistema
 4.  Scripts
 5.  EndPoints Disponíveis
-6.  Outras Ferramentas / Tecnologias
+6.  Testes automatizados Unitarios/Integração
+7.  Outras Ferramentas / Tecnologias
 
 # 1) Sobre o sistema
 
-É um sistema para construir e gerenciar seu banco de dados. Conta com validação, autenticação e controle de acesso de usuarios.
+É um sistema para construir e gerenciar seu banco de dados. Conta com validação, autenticação e controle de acesso de cadastros.
 
 A modularização é realizada utilizando como premissa a arquitetura MVC.
 
@@ -98,36 +99,52 @@ yarn start-dev
 
 # 4) Scripts
 
-| Script           | Description                                     |
-| ---------------- | ----------------------------------------------- |
-| `yarn start-dev` | Rodar servidor - "nodemon ./src/app.ts"         |
-| `yarn start`     | Compilar e rodar servidor - "node build/app.js" |
-| `yarn prestart`  | "npm run build"                                 |
-| `yarn build`     | Gera compilação - "tsc"                         |
-| `yarn format`    | Formatação do codigo - "prettier --write ."     |
+| Script                   | Description                                          |
+| ------------------------ | ---------------------------------------------------- |
+| `yarn start-dev`         | Rodar servidor - "nodemon ./src/app.ts"              |
+| `yarn start`             | Compilar e rodar servidor - "node build/app.js"      |
+| `yarn prestart`          | "npm run build"                                      |
+| `yarn build`             | Gera compilação - "tsc"                              |
+| `yarn format`            | Formatação do codigo - "prettier --write ."          |
+| `yarn test`              | Executar testes em serie com Jest (jest --runInBand) |
+| `yarn docker:image-test` | Gera e testa imagem Docker                           |
 
 # 5) EndPoints Disponíveis
 
+| Authentication           | Description                                   |
+| ------------------------ | --------------------------------------------- |
+| `post /superadmin/login` | Login de conta SUPERADMIN                     |
+| `post /users/login`      | Login de conta USER                           |
+| `post /admin/login`      | Login de conta ADMIN                          |
+| `post /logout`           | Logout                                        |
+| `get /verify`            | Verifica quem esta logado (name, email, role) |
+
+| SuperAdmin (controle geral)            | Description              |
+| -------------------------------------- | ------------------------ |
+| `get /superadmin/agency`               | Retorna agencias         |
+| `get /superadmin/agency/:id`           | Retorna agencias por id  |
+| `post /superadmin/agency/register`     | Criação de agencia       |
+| `post /superadmin/users/register`      | Criação de usuario       |
+| `post /superadmin/client/register`     | Criação de cliente       |
+| `put /superadmin/agency/update/:id`    | Atualizar agencia por id |
+| `put /superadmin/users/update/:id`     | Atualizar usuario por id |
+| `put /superadmin/client/update/:id`    | Atualizar cliente por id |
+| `delete /superadmin/agency/delete/:id` | Deletar Agencias por id  |
+| `delete /superadmin/users/delete/:id`  | Deletar usuarios por id  |
+| `delete /superadmin/client/delete/:id` | Deletar clientes por id  |
+
+| Admin (controle na agencia) | Description                                              |
+| --------------------------- | -------------------------------------------------------- |
+| `get /admin/users`          | Retorna todos os usuarios                                |
+| `get /admin/users/:id`      | Retorna usuario pelo ID                                  |
+| `post /admin/register`      | Criação de usuarios (user/admin)                         |
+| `put /admin/updatebyemail`  | Pelo email, atualiza dados de usuarios tipo (user/admin) |
+| `delete /admin/delete/:id`  | Deleta por ID, usuarios tipo (user/admin)                |
+
 | Users                  | Description                                                |
 | ---------------------- | ---------------------------------------------------------- |
-| `post /users/register` | Criação de usuários (user) (com validação de cadastro)     |
 | `put /users/update`    | (Admin/User) Atualiza dados (nome e senha) da conta logada |
 | `delete /users/delete` | (Admin/user) Deleta usuario logado                         |
-
-| Authentication      | Description                                   |
-| ------------------- | --------------------------------------------- |
-| `post /users/login` | Login de conta USER                           |
-| `post /admin/login` | Login de conta ADMIN                          |
-| `post /logout`      | Logout                                        |
-| `get /verify`       | Verifica quem esta logado (name, email, role) |
-
-| Admin                          | Description                                              |
-| ------------------------------ | -------------------------------------------------------- |
-| `get /admin`                   | Retorna todos os usuarios                                |
-| `get /admin/:id`               | Retorna usuario pelo ID                                  |
-| `post /admin/register`         | Criação de usuarios (user/admin)                         |
-| `put /admin/updatebyemail`     | Pelo email, atualiza dados de usuarios tipo (user/admin) |
-| `delete /admin/deletebyid/:id` | Deleta por ID, usuarios tipo (user/admin)                |
 
 | Client                      | Description                                      |
 | --------------------------- | ------------------------------------------------ |
@@ -136,7 +153,17 @@ yarn start-dev
 | `put /client/update/:id`    | Atualiza dados (nome e imagem) do cliente por id |
 | `delete /client/delete/:id` | Delete clientes dentro da agencia por id         |
 
-# 6) Outras Ferramentas / Tecnologias
+# 6) Testes automatizados Unitarios/Integração
+
+Na pasta "**tests**", testes unitarios apresentam sufixo ".test.ts" e testes de integração ".integration.test.ts".
+
+Para executar por completo a bateria de testes em série, execute no terminal:
+
+```
+yarn test
+```
+
+# 7) Outras Ferramentas / Tecnologias
 
 - `Zod`: Validação de usuarios na criação e login
 - `Bcrypt`: Criptografia do tipo hash para senhas
@@ -144,4 +171,7 @@ yarn start-dev
 - `ESLint`: Analisa estaticamente o código para encontrar problemas rapidamente.
 - `Nodemon`: Monitora quaisquer alterações na origem e reinicia automaticamente o servidor.
 - `Debug VSCode`: Depurador integrado do VS Code .
-- `Prettier`: Formatação de codigo.
+- `Prettier`: Formatação automática de codigo.
+- `Swagger UI`: Documentação automática de API.
+- `Jest`: Testes Automatizados (Unitarios/Integração).
+- `Docker`: Deploy da aplicação no servidor.
