@@ -1,0 +1,46 @@
+{
+    "gitlab.customQueries": [
+        {
+            "name": "Issues assigned to me",
+            "type": "issues",
+            "scope": "assigned_to_me",
+            "state": "opened",
+            "noItemText": "There is no issue assigned to you."
+        },
+        {
+            "name": "Issues created by me",
+            "type": "issues",
+            "scope": "created_by_me",
+            "state": "opened",
+            "noItemText": "There is no issue created by you."
+        },
+        {
+            "name": "Merge requests assigned to me",
+            "type": "merge_requests",
+            "scope": "assigned_to_me",
+            "state": "opened",
+            "noItemText": "There is no MR assigned to you."
+        },
+        {
+            "name": "Merge requests I'm reviewing",
+            "type": "merge_requests",
+            "reviewer": "<current_user>",
+            "state": "opened",
+            "noItemText": "There is no MR for you to review."
+        },
+        {
+            "name": "Merge requests created by me",
+            "type": "merge_requests",
+            "scope": "created_by_me",
+            "state": "opened",
+            "noItemText": "There is no MR created by you."
+        },
+        {
+            "name": "All project merge requests",
+            "type": "merge_requests",
+            "scope": "all",
+            "state": "opened",
+            "noItemText": "The project has no merge requests"
+        }
+    ]
+}
