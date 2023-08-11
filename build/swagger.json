@@ -185,6 +185,7 @@
             "put": {
                 "tags": ["Client"],
                 "summary": "Update client data (name and image) by id",
+                "security": [{ "bearerAuth": [] }],
                 "parameters": [
                     {
                         "name": "Client",
@@ -220,6 +221,7 @@
             "delete": {
                 "tags": ["Client"],
                 "summary": "Delete clients within the agency by id",
+                "security": [{ "bearerAuth": [] }],
                 "parameters": [
                     {
                         "name": "Id Client",
@@ -250,6 +252,7 @@
             "put": {
                 "tags": ["Users"],
                 "summary": "(Admin/user) updates data (name and password) of the account that is logged in",
+                "security": [{ "bearerAuth": [] }],
                 "parameters": [
                     {
                         "name": "Users",
@@ -283,6 +286,7 @@
             "delete": {
                 "tags": ["Users"],
                 "summary": "(Admin/user) delete logged in user",
+                "security": [{ "bearerAuth": [] }],
                 "responses": {
                     "200": {
                         "description": "Deleted logged cadaster | payload: usersDeleteById"
@@ -300,6 +304,7 @@
             "get": {
                 "tags": ["Admin"],
                 "summary": "Returns all users with hashed passwords",
+                "security": [{ "bearerAuth": [] }],
                 "responses": {
                     "200": {
                         "description": "success: true | payload: users"
@@ -313,18 +318,14 @@
                     "500": {
                         "description": "Server error!"
                     }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/admin/users/{id}": {
             "get": {
                 "tags": ["Admin"],
                 "summary": "Returns user by ID",
+                "security": [{ "bearerAuth": [] }],
                 "parameters": [
                     {
                         "name": "Id User",
@@ -358,14 +359,14 @@
                     "500": {
                         "description": "Server error!"
                     }
-                },
-                "security": [{ "bearerAuth": [] }]
+                }
             }
         },
         "/admin/register": {
             "post": {
                 "tags": ["Admin"],
                 "summary": "Creating Users <user/admin>",
+                "security": [{ "bearerAuth": [] }],
                 "parameters": [
                     {
                         "name": "User",
@@ -399,6 +400,7 @@
             "put": {
                 "tags": ["Admin"],
                 "summary": "Update data of users type <user/admin> already created",
+                "security": [{ "bearerAuth": [] }],
                 "parameters": [
                     {
                         "name": "User",
@@ -435,6 +437,7 @@
             "delete": {
                 "tags": ["Users"],
                 "summary": "(Admin/user) delete logged in user",
+                "security": [{ "bearerAuth": [] }],
                 "parameters": [
                     {
                         "name": "Id User",
@@ -468,6 +471,7 @@
             "get": {
                 "tags": ["SuperAdmin"],
                 "summary": "Returns agencies",
+                "security": [{ "bearerAuth": [] }],
                 "responses": {
                     "200": {
                         "description": "success: true | payload: allAgencies"
@@ -481,18 +485,14 @@
                     "500": {
                         "description": "Server error!"
                     }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/superadmin/agency/:id": {
             "get": {
                 "tags": ["SuperAdmin"],
                 "summary": "Returns agency by id",
+                "security": [{ "bearerAuth": [] }],
                 "responses": {
                     "200": {
                         "description": "success: true | payload: agenciesById"
@@ -506,18 +506,14 @@
                     "500": {
                         "description": "Server error!"
                     }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/superadmin/agency/register": {
             "post": {
                 "tags": ["SuperAdmin"],
                 "summary": "Register agency",
+                "security": [{ "bearerAuth": [] }],
                 "parameters": [
                     {
                         "name": "Agency",
@@ -544,18 +540,14 @@
                     "500": {
                         "description": "Server error!"
                     }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/superadmin/users/register": {
             "post": {
                 "tags": ["SuperAdmin"],
                 "summary": "Register user",
+                "security": [{ "bearerAuth": [] }],
                 "parameters": [
                     {
                         "name": "User",
@@ -579,18 +571,14 @@
                     "500": {
                         "description": "Server error!"
                     }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/superadmin/client/register": {
             "post": {
                 "tags": ["SuperAdmin"],
                 "summary": "Register client",
+                "security": [{ "bearerAuth": [] }],
                 "parameters": [
                     {
                         "name": "Client",
@@ -614,18 +602,14 @@
                     "500": {
                         "description": "Server error!"
                     }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/superadmin/agency/update/:id": {
             "put": {
                 "tags": ["SuperAdmin"],
                 "summary": "Update agency by id",
+                "security": [{ "bearerAuth": [] }],
                 "parameters": [
                     {
                         "name": "Agency",
@@ -657,18 +641,14 @@
                     "500": {
                         "description": "Server error!"
                     }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/superadmin/users/update/:id": {
             "put": {
                 "tags": ["SuperAdmin"],
                 "summary": "Update user by id",
+                "security": [{ "bearerAuth": [] }],
                 "parameters": [
                     {
                         "name": "User",
@@ -700,18 +680,14 @@
                     "500": {
                         "description": "Server error!"
                     }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/superadmin/client/update/:id": {
             "put": {
                 "tags": ["SuperAdmin"],
                 "summary": "Update client by id",
+                "security": [{ "bearerAuth": [] }],
                 "parameters": [
                     {
                         "name": "Client",
@@ -743,18 +719,14 @@
                     "500": {
                         "description": "Server error!"
                     }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ]
+                }
             }
         },
         "/superadmin/agency/delete/:id": {
             "delete": {
                 "tags": ["SuperAdmin"],
                 "summary": "Delete Agency by ID",
+                "security": [{ "bearerAuth": [] }],
                 "responses": {
                     "200": {
                         "description": "Deleted Agency | payload: agencyDeleteById"
@@ -778,6 +750,7 @@
             "delete": {
                 "tags": ["SuperAdmin"],
                 "summary": "Delete User by ID",
+                "security": [{ "bearerAuth": [] }],
                 "responses": {
                     "200": {
                         "description": "Deleted User | payload: userDeleteById"
@@ -801,6 +774,7 @@
             "delete": {
                 "tags": ["SuperAdmin"],
                 "summary": "Delete Client by ID",
+                "security": [{ "bearerAuth": [] }],
                 "responses": {
                     "200": {
                         "description": "Deleted Client | payload: clientDeleteById"

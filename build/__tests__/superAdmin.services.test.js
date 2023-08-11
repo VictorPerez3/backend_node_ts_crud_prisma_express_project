@@ -35,14 +35,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const superAdmin_services_1 = require("../services/superAdmin.services");
 const authServices = __importStar(require("../services/auth.services"));
 const superAdminRepository = __importStar(require("../repositories/superAdmin.repository"));
+const app_1 = require("../app");
+let server;
 jest.mock("../services/auth.services", () => ({
     decodedTokenSuperAdmin: jest.fn(),
 }));
 //Teste 4 - SuperAdmin Services Tests
 //Teste 4.1 - isSuperAdmin
 describe("isSuperAdmin", () => {
-    afterEach(() => {
-        jest.clearAllMocks();
+    beforeAll(() => {
+        server = (0, app_1.startServer)(process.env.TEST_PORT);
+    });
+    afterAll(() => {
+        server.close();
     });
     //Teste 4.1.1 - Verifica se retorna true se o usuario é superadmin
     it("should return true if the user is a super admin", () => __awaiter(void 0, void 0, void 0, function* () {
@@ -61,7 +66,9 @@ describe("isSuperAdmin", () => {
             createdAt: new Date(),
             updatedAt: new Date(),
         };
-        jest.spyOn(superAdminRepository, "returnSuperAdmin").mockResolvedValueOnce(mockSuperAdmin);
+        jest
+            .spyOn(superAdminRepository, "returnSuperAdmin")
+            .mockResolvedValueOnce(mockSuperAdmin);
         // Chama a função isSuperAdmin com o token mockado
         const result = yield (0, superAdmin_services_1.isSuperAdmin)(validToken);
         // Verifica se a função retornou true, indicando que o usuário é um super admin
@@ -76,7 +83,9 @@ describe("isSuperAdmin", () => {
         // Configura o mock de decodedTokenSuperAdmin para retornar as informações do usuário
         authServices.decodedTokenSuperAdmin.mockResolvedValueOnce(mockUserToken);
         // Mock da função returnSuperAdmin para retornar null (usuário não é um super admin)
-        jest.spyOn(superAdminRepository, "returnSuperAdmin").mockResolvedValueOnce(null);
+        jest
+            .spyOn(superAdminRepository, "returnSuperAdmin")
+            .mockResolvedValueOnce(null);
         // Chama a função isSuperAdmin com o token mockado
         const result = yield (0, superAdmin_services_1.isSuperAdmin)(validToken);
         // Verifica se a função retornou false, indicando que o usuário não é um super admin

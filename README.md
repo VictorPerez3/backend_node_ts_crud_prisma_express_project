@@ -20,6 +20,7 @@
     3. Configurando as variáveis de ambiente
     4. Migração do Banco de dados
     5. Execução do Sistema
+    6. Execução em Container Docker
 4.  Scripts
 5.  EndPoints Disponíveis
 6.  Testes automatizados Unitarios/Integração
@@ -78,6 +79,7 @@ TOKEN_KEY=
 DATABASE_URL=
 
 ```
+Obs: Existe o ".env" para rodar pelo vscode. E existe o ".env.docker" para rodar pelo docker (DATABASE_URL= "postgres" no logar de "localhost").
 
 ### 4 - Migração do Banco de dados:
 
@@ -97,16 +99,22 @@ npx prisma db push
 yarn start-dev
 ```
 
+## 6 - Execução em Container Docker
+
+```
+yarn docker:compose
+```
+
 # 4) Scripts
 
 | Script                   | Description                                          |
 | ------------------------ | ---------------------------------------------------- |
-| `yarn start-dev`         | Rodar servidor - "nodemon ./src/app.ts"              |
-| `yarn start`             | Compilar e rodar servidor - "node build/app.js"      |
-| `yarn prestart`          | "npm run build"                                      |
+| `yarn start-dev`         | Rodar servidor - "nodemon src/start.ts"              |
+| `yarn start`             | Compilar e rodar servidor - "node build/start.js"    |
 | `yarn build`             | Gera compilação - "tsc"                              |
 | `yarn format`            | Formatação do codigo - "prettier --write ."          |
 | `yarn test`              | Executar testes em serie com Jest (jest --runInBand) |
+| `yarn docker:compose`    | Gera projeto docker "docker-compose up"              |
 | `yarn docker:image-test` | Gera e testa imagem Docker                           |
 
 # 5) EndPoints Disponíveis
@@ -172,6 +180,6 @@ yarn test
 - `Nodemon`: Monitora quaisquer alterações na origem e reinicia automaticamente o servidor.
 - `Debug VSCode`: Depurador integrado do VS Code .
 - `Prettier`: Formatação automática de codigo.
-- `Swagger UI`: Documentação automática de API.
+- `Swagger UI`: Documentação automática de API (http://localhost:port/api-docs/#/).
 - `Jest`: Testes Automatizados (Unitarios/Integração).
 - `Docker`: Deploy da aplicação no servidor.

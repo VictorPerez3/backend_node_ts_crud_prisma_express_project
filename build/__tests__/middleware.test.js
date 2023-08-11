@@ -40,12 +40,17 @@ const client_schemas_1 = require("../schemas/client.schemas");
 const user_schemas_1 = require("../schemas/user.schemas");
 const auth_1 = require("../middlewares/auth");
 const authServices = __importStar(require("../services/auth.services"));
+const app_1 = require("../app");
+let server;
 jest.mock("../services/auth.services");
 //Teste 1 - Middleware
 //Teste 1.1 - Validate
 describe("validate middleware", () => {
-    afterEach(() => {
-        jest.clearAllMocks();
+    beforeAll(() => {
+        server = (0, app_1.startServer)(process.env.TEST_PORT);
+    });
+    afterAll(() => {
+        server.close();
     });
     // Mock dos objetos Request, Response e NextFunction
     const mockRequest = {};

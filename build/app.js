@@ -8,14 +8,16 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const routes_1 = __importDefault(require("./routes"));
 dotenv_1.default.config();
-const app = (0, express_1.default)();
-//middleware - Parsing do Body da requisição(possibilita conseguir ler o json)
-app.use(express_1.default.json());
-//Import de routers
-(0, routes_1.default)(app);
 // Test - server
-const startServer = (port = process.env.SERVER_PORT) => app.listen(port, () => {
-    console.log(`server started at http://localhost:${port}`);
-});
+const startServer = (port = process.env.SERVER_PORT) => {
+    const app = (0, express_1.default)();
+    //middleware - Parsing do Body da requisição(possibilita conseguir ler o json)
+    app.use(express_1.default.json());
+    //Import de routers
+    (0, routes_1.default)(app);
+    return app.listen(port, () => {
+        console.log(`server started at http://localhost:${port}`);
+    });
+};
 exports.startServer = startServer;
 //# sourceMappingURL=app.js.map
