@@ -14,6 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const auth_services_1 = require("../services/auth.services");
+const app_1 = require("../app");
+let server;
 jest.mock("../repositories/auth.repository");
 jest.mock("jsonwebtoken", () => ({
     verify: jest.fn(),
@@ -22,11 +24,13 @@ jest.mock("jsonwebtoken", () => ({
 jest.mock("../repositories/user.repository", () => ({
     getUserByEmail: jest.fn(),
 }));
-//Teste 3 - Auth Services Tests
 //Teste 3.1 - tokenGenerated
 describe("tokenGenerated", () => {
-    afterEach(() => {
-        jest.clearAllMocks();
+    beforeAll(() => {
+        server = (0, app_1.startServer)(process.env.TEST_PORT);
+    });
+    afterAll(() => {
+        server.close();
     });
     //Teste 3.1.1 - Verifica se poder ser gerado um token valido com um objeto userAuth
     it("should generate a valid token with userAuth data", () => __awaiter(void 0, void 0, void 0, function* () {
@@ -68,9 +72,6 @@ describe("tokenGenerated", () => {
 });
 //Teste 3.2 - decodedTokenSuperAdmin
 describe("decodedTokenSuperAdmin", () => {
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
     //Teste 3.2.1 - Verifica se retorna o usuario a partir do token valido
     it("should return decoded user info if valid token is provided", () => __awaiter(void 0, void 0, void 0, function* () {
         // Mock das informações do usuário decodificadas
@@ -117,9 +118,6 @@ describe("decodedTokenSuperAdmin", () => {
 });
 //Teste 3.3 - isTokenExpired
 describe("isTokenExpired", () => {
-    afterEach(() => {
-        jest.clearAllMocks();
-    });
     //Teste 3.3.1 - Verifica se retorna true se o token estiver expirado
     it("should return true if the token is expired", () => {
         // Mock do token expirado (data de expiração no passado)
