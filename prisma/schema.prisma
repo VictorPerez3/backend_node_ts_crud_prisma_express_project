@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// Sempre que você atualizar seu esquema Prisma, você terá que atualizar seu esquema de banco de dados usando um ou . Isso manterá o esquema do banco de dados sincronizado com o esquema do Prisma. Os comandos também regenerarão o Prisma Client: 
+//Comando para atualizar o esquema do D.B: prisma migrate devprisma db push
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model SuperAdmin {
+  id        Int      @id @default(autoincrement())
+  name      String?  @db.VarChar(255)
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Agency {
+  id        Int      @id @default(autoincrement())
+  name      String?  @db.VarChar(255)
+  image     String?
+  enabled   Boolean  @default(true)
+  users     Users[]
+  clients   Client[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Users {
+  id        Int      @id @default(autoincrement())
+  name      String?  @db.VarChar(255)
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  role     RoleEnumType? @default(user)
+  agency   Agency        @relation(fields: [agencyId], references: [id])
+  agencyId Int
+}
+
+model Client {
+  id        Int      @id @default(autoincrement())
+  name      String?  @db.VarChar(255)
+  email     String   @unique
+  image     String?
+  enabled   Boolean  @default(true)
+  agencyId  Int
+  agency    Agency   @relation(fields: [agencyId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+enum RoleEnumType {
+  user
+  admin
+}
+
+model BlackListToken {
+  id        Int     @id @default(autoincrement())
+  token     String  @unique
+  createdAt DateTime @default(now())
+}

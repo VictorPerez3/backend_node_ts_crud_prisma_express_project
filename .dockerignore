@@ -1,0 +1,10 @@
+yarn.lock
+yarn-error.log
+README.md
+eslint.json
+Dockerfile
+.prettierignore
+.prettierrc.json
+.gitignore
+node_modules
+build

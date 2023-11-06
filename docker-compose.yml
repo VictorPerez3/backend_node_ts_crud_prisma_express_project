@@ -1,0 +1,33 @@
+version: "3"
+# cria um network para os containers interagirem
+networks:
+  default:
+    name: backendapp-network
+    driver: bridge
+services:
+  postgres:
+    image: postgres:13
+    restart: always
+    container_name: postgres_backend_container
+    # guarda dados localmente
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    env_file:
+      - ./.env.docker
+    ports:
+      - '5432:5432'
+  app:
+    build: 
+      context: ./
+      dockerfile: ./Dockerfile
+    container_name: app-container
+    env_file:
+      - ./.env.docker
+    # volumes:
+    #   - ./src:/app/src
+    ports:
+      - '8080:8080'
+    # cria sincronia com o postgresDB
+    depends_on:
+      - postgres
+  
