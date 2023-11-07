@@ -1,6 +1,6 @@
 # Backend_Node_TS_Crud_Prisma_Express_Project
 
-`Data de Desenvolvimento/ultima modificação` : 08/08/2023
+`Data de Desenvolvimento/ultima modificação` : 07/11/2023
 
 `Empresa`: Tegrus
 
